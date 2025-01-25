@@ -1,0 +1,41 @@
+@keyframes fillAnimation {
+    0% {
+      width: 0;
+    }
+  }
+  
+  @keyframes leftAppear {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(0%);
+    }
+  }
+  
+  @keyframes rightAppear {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(0%);
+    }
+  }
+  
+.animate-bounce-left {
+    animation: bounceLeft 2s ease;
+    transition: transform 0.9s ease;
+  }
+  
+  @keyframes bounceLeft {
+    0% {
+      transform: translateX(-100%);
+    }
+    50% {
+      transform: translateX(10%);
+    }
+    100% {
+      transform: translateX(0%);
+    }
+  }
+  
