@@ -66,7 +66,7 @@ const About = () => {
               <h1 className="text-darkHeadingColor mb-4">About Me</h1>
             </div>
             <p className="text-gray-700 text-2xl font-semibold font-caviateFont">
-              With 2.6 years of immersive experience across diverse technology stacks, I'm dedicated to infusing creativity and expertise into every project. From conception to execution, I strive to push boundaries, crafting compelling solutions that resonate and drive tangible results. My passion for innovation fuels my commitment to delivering excellence, ensuring each endeavor leaves a lasting impact.
+             With 3.7 years of hands-on experience across diverse technology stacks, I bring a blend of creativity, precision, and technical expertise to every project I work on. I’m passionate about building meaningful digital experiences—from ideation to execution—by crafting scalable, performance-driven solutions that solve real problems. My curiosity for innovation and focus on quality help ensure that every product I contribute to is impactful, reliable, and forward-thinking.
             </p>
             <div className="mt-5">
               <Link
