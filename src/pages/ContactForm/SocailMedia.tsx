@@ -4,7 +4,7 @@ import SocialMediaIcons from "../../component/SocialMediaIcons/SocialMediaIcons"
 const SocialMedia = () => {
   const phoneNumber = "+919955956721";
   const emailAddress = "irahulkv@gmail.com";
-  const location = "Noida, UP, India";
+  const location = "Kolkata, West Bengal, India";
 
   const handlePhoneCall = () => {
     window.location.href = `tel:${phoneNumber}`;

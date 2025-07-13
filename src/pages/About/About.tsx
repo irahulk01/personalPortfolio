@@ -30,6 +30,15 @@ const About = () => {
       },
     },
   };
+  const careerStartDate = new Date("2021-12-01");
+  const now = new Date();
+
+  const diffInMonths =
+    (now.getFullYear() - careerStartDate.getFullYear()) * 12 +
+    (now.getMonth() - careerStartDate.getMonth());
+
+  const years = Math.floor(diffInMonths / 12);
+  const months = diffInMonths % 12;
 
   return (
     <div className="mt-[4rem] relative">
@@ -66,7 +75,7 @@ const About = () => {
               <h1 className="text-darkHeadingColor mb-4">About Me</h1>
             </div>
             <p className="text-gray-700 text-2xl font-semibold font-caviateFont">
-             With 3.7 years of hands-on experience across diverse technology stacks, I bring a blend of creativity, precision, and technical expertise to every project I work on. I’m passionate about building meaningful digital experiences—from ideation to execution—by crafting scalable, performance-driven solutions that solve real problems. My curiosity for innovation and focus on quality help ensure that every product I contribute to is impactful, reliable, and forward-thinking.
+              With over {years}.{Math.round((months / 12) * 10)} years of versatile, hands-on experience across multiple modern tech stacks, I bring a solid blend of engineering precision, product intuition, and leadership. I specialize in building high-performance, scalable, and user-centric web applications, consistently delivering impact in fast-paced environments. Whether collaborating across teams or leading a feature from scratch, I ensure every solution I craft is robust, maintainable, and aligned with business goals.
             </p>
             <div className="mt-5">
               <Link
@@ -94,27 +103,43 @@ const About = () => {
           </div>
         </div>
       </div>
-      <div className="mt-[1rem] lg:px-20 grid sm:grid-cols-2 gap-x-20">
-        {skills.map((skill, index) => (
-          <div key={index} className="mb-4">
-            <div className="text-left font-semibold flex items-center gap-2 p-2">
-              <span className="text-[2rem] flex">{skill.icon}</span>
-              <span>{skill.name}</span>
+<div className="mt-[1rem] lg:px-20">
+  {["Language", "Framework", "Backend"].map((category) => (
+    <div key={category} className="mb-10">
+      <h2 className="text-xl font-bold text-darkHeadingColor mb-4">
+        {category === "Language"
+          ? "Languages"
+          : category === "Framework"
+          ? "Tools & Libraries"
+          : "Backend"}
+      </h2>
+      <div className="grid sm:grid-cols-2 gap-x-20">
+        {skills
+          .filter((skill) => skill.category === category)
+          .map((skill, index) => (
+            <div key={index} className="mb-4">
+              <div className="text-left font-semibold flex items-center gap-2 p-2">
+                <span className="text-[2rem] flex items-center">
+                  {skill.icon}
+                </span>
+                <span>{skill.name}</span>
+              </div>
+              <div className="h-2 bg-gray-300 rounded-full">
+                <motion.div
+                  className="h-full bg-[#3e4455] rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{
+                    width: `${skill.percentage}%`,
+                  }}
+                  transition={{ duration: 1, ease: "easeInOut" }}
+                ></motion.div>
+              </div>
             </div>
-            <div className="h-2 bg-gray-300 rounded-full">
-              <motion.div
-                className="h-full bg-[#3e4455] rounded-full"
-                style={{
-                  width: `${(skill.percentage / 100) * 100}%`,
-                  animation: "fillAnimation 1s ease-in-out forwards",
-                }}
-                initial={{ width: 0 }}
-                animate={{ width: `${(skill.percentage / 100) * 100}%` }}
-              ></motion.div>
-            </div>
-          </div>
-        ))}
+          ))}
       </div>
+    </div>
+  ))}
+</div>
       <div className="mt-5 flex justify-end">
         <Link
           to="/Work"
