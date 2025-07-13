@@ -1,150 +1,131 @@
-import { useState } from "react";
-import { databases, DATABASE_ID, FormDataID as COLLECTION_ID, ID } from '../../appwrite/appwriteConfig';
+import './formOverrides.css';
+import { useForm, Controller } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import PhoneInput from "react-phone-input-2";
+import 'react-phone-input-2/lib/style.css';
+import { useContactForm } from "../../hooks/useContactForm.ts";
+
+const schema = yup.object().shape({
+  name: yup.string().required("Name is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+  phoneNumber: yup.string().required("Phone number is required"),
+  description: yup.string().default(""),
+});
+
+type FormData = yup.InferType<typeof schema>;
 
 export default function ContactForm() {
-  const initialFormData = {
-    name: '',
-    email: '',
-    phoneNumber: '',
-    description: ''
-  };
+  const {
+    handleContactSubmit,
+    successMessage,
+    duplicateError,
+    loading,
+  } = useContactForm();
 
-  const [formData, setFormData] = useState(initialFormData);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [errors, setErrors] = useState({
-    name: '',
-    email: '',
-    phoneNumber: ''
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+    reset
+  } = useForm<FormData>({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      name: '',
+      email: '',
+      phoneNumber: '',
+      description: '',
+    }
   });
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-    return emailRegex.test(email);
-  };
-
-  const validatePhoneNumber = (phoneNumber: string) => {
-    const phoneRegex = /^\+?[0-9]*$/;
-    return phoneRegex.test(phoneNumber);
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (Object.values(errors).some((error) => error !== "")) {
-      console.error('Form submission failed due to validation errors');
-      return;
-    }
-
-    try {
-      const response = await databases.createDocument(
-        DATABASE_ID,
-        COLLECTION_ID,
-        ID.unique(),
-        formData
-      );
-      if (response.$id) {
-        setSuccessMessage("Form submitted successfully!");
-        setFormData(initialFormData);
-      } else {
-        console.error('Form submission failed');
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-
-    if (name === "name" && value.trim() === "") {
-      setErrors({ ...errors, [name]: "Name is required" });
-    } else if (name === "email" && !validateEmail(value)) {
-      setErrors({ ...errors, [name]: "Invalid email address" });
-    } else if (name === "phoneNumber" && !validatePhoneNumber(value)) {
-      setErrors({ ...errors, [name]: "Invalid phone number" });
-    } else {
-      setErrors({ ...errors, [name]: "" });
-    }
+  const onSubmit = async (data: FormData) => {
+    const success = await handleContactSubmit(data);
+    if (success) reset();
   };
 
   return (
-    <>
-      <form className="max-w-md mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">
-            Your Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            className="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
-            placeholder="Enter your Name"
-            value={formData.name}
-            onChange={handleInputChange}
-          />
-          {errors.name && <p className="text-red-500">{errors.name}</p>}
-        </div>
-        <div className="mb-4">
-          <label htmlFor="phoneNumber" className="block text-gray-700 text-sm font-bold mb-2">
-            Phone No.
-          </label>
-          <input
-            type="text"
-            id="phoneNumber"
-            name="phoneNumber"
-            className="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
-            placeholder="Enter Your Phone No. With Country Code"
-            value={formData.phoneNumber}
-            onChange={handleInputChange}
-          />
-          {errors.phoneNumber && <p className="text-red-500">{errors.phoneNumber}</p>}
-        </div>
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
-            Mail Address <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            className="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
-            placeholder="example@example.com"
-            value={formData.email}
-            onChange={handleInputChange}
-          />
-          {errors.email && <p className="text-red-500">{errors.email}</p>}
-        </div>
-        <div className="mb-4">
-          <label htmlFor="description" className="block text-gray-700 text-sm font-bold mb-2">
-            Project Description
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            className="horizontal w-full p-2 border rounded focus:outline-none focus:border-blue-500"
-            rows={4}
-            placeholder="Tell us about your project..."
-            value={formData.description}
-            onChange={handleInputChange}
-          ></textarea>
-        </div>
-        <div className="flex justify-center">
-          <button
-            type="submit"
-            className={`bg-[#3e4355] text-white py-2 px-4 rounded-lg hover:bg-[#292e40] ${(!formData.name || !formData.email || Object.values(errors).some(error => error !== ""))
-              ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-            disabled={!formData.name || !formData.email || Object.values(errors).some(error => error !== "")}
-          >
-            Hire Me
-          </button>
-        </div>
-        <div className="flex justify-end lg:justify-center">
-          {successMessage && <p className="text-green-500">{successMessage}</p>}
-        </div>
-      </form>
-    </>
+    <form className="max-w-md mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit(onSubmit)}>
+      {/* Name */}
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-bold mb-2">
+          Your Name <span className="text-red-500">*</span>
+        </label>
+        <input
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Enter your name"
+          {...register("name")}
+        />
+        {errors.name && <p className="text-red-500">{errors.name.message}</p>}
+      </div>
+
+      {/* Email */}
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-bold mb-2">
+          Email <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="email"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          placeholder="example@example.com"
+          {...register("email")}
+        />
+        {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+      </div>
+
+      {/* Phone */}
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-bold mb-2">
+          Phone Number <span className="text-red-500">*</span>
+        </label>
+        <Controller
+          name="phoneNumber"
+          control={control}
+          render={({ field }) => (
+            <PhoneInput
+              country={'in'}
+              value={field.value}
+              onChange={field.onChange}
+              containerClass="w-full"
+              inputClass="!w-80% !px-8 !py-2 !border !border-gray-300 !rounded-md !text-sm !shadow-sm !placeholder-gray-400 focus:!outline-none focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500"
+              buttonClass="!border-r !border-gray-300 !bg-white !rounded-l-md"
+              specialLabel=""
+              enableSearch
+            />
+          )}
+        />
+        {errors.phoneNumber && <p className="text-red-500">{errors.phoneNumber.message}</p>}
+      </div>
+
+      {/* Description */}
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-bold mb-2">
+          Project Description
+        </label>
+        <textarea
+          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          rows={4}
+          placeholder="Tell us about your project..."
+          {...register("description")}
+        ></textarea>
+      </div>
+
+      {/* Submit */}
+      <div className="flex justify-center">
+        <button
+          type="submit"
+          className="bg-[#3e4355] text-white py-2 px-4 rounded-lg hover:bg-[#292e40]"
+          disabled={loading}
+        >
+          {loading ? "Submitting..." : "Hire Me"}
+        </button>
+      </div>
+
+      {/* Messages */}
+      <div className="mt-4 text-center">
+        {successMessage && <p className="text-green-500">{successMessage}</p>}
+        {duplicateError && <p className="text-red-500">{duplicateError}</p>}
+      </div>
+    </form>
   );
 }

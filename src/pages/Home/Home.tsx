@@ -4,10 +4,11 @@ import profileImg from "../../assets/Profile/profile.png";
 import SocialMediaIcons from "../../component/SocialMediaIcons/SocialMediaIcons";
 import { HiOutlineMinus } from "react-icons/hi";
 import { Resume } from "../../component/ResumeButton/ResumeButton";
-import useVisitCount from './HomeVisitCount';
+import useVisitCount from "../../hooks/useVisitCount"; 
 
 const Home = () => {
-  const viewCount = useVisitCount()
+  const viewCount = useVisitCount();
+
   return (
     <motion.main
       className="relative"
@@ -33,7 +34,7 @@ const Home = () => {
                 I'm <span className="text-highLighter">Rahul</span> Kumar
               </span>
               Web Developer with specialization in React, based in
-              Noida, Uttar Pradesh, India. I'm a passionate engineer eager to contribute my skills
+              Kolkata, West Bengal, India. I'm a passionate engineer eager to contribute my skills
               and collaborate with teams around the world.
             </p>
             <div>
@@ -43,12 +44,13 @@ const Home = () => {
         </motion.div>
         <motion.img
           src={profileImg}
-          alt=""
+          alt="Rahul Kumar"
           loading="lazy"
           className="md:w-1/2 w-[20rem] lg:w-[36rem] lg:h-[36rem] rounded-b-full mt-4"
           variants={imgVariants}
         />
       </section>
+
       <section className="absolute bottom-[-4rem] flex flex-col lg:flex-row justify-center lg:justify-between w-full items-center">
         <motion.div
           className="text-xl mb-[1rem] m-[2rem] lg:mb-[6rem]"
