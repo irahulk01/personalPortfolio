@@ -4,6 +4,7 @@ import { HiOutlineMinus } from "react-icons/hi";
 import { skills } from "./skillData";
 import { Link } from "react-router-dom";
 import "./About.css";
+import experienceYear from "../../utills/experienceYear";
 
 const About = () => {
   // Animations
@@ -30,15 +31,10 @@ const About = () => {
       },
     },
   };
-  const careerStartDate = new Date("2021-12-01");
-  const now = new Date();
 
-  const diffInMonths =
-    (now.getFullYear() - careerStartDate.getFullYear()) * 12 +
-    (now.getMonth() - careerStartDate.getMonth());
 
-  const years = Math.floor(diffInMonths / 12);
-  const months = diffInMonths % 12;
+  // const years = Math.floor(diffInMonths / 12);
+  // const months = diffInMonths % 12;
 
   return (
     <div className="mt-[4rem] relative">
@@ -75,7 +71,7 @@ const About = () => {
               <h1 className="text-darkHeadingColor mb-4">About Me</h1>
             </div>
             <p className="text-gray-700 text-2xl font-semibold font-caviateFont">
-              With over {years}.{Math.round((months / 12) * 10)} years of versatile, hands-on experience across multiple modern tech stacks, I bring a solid blend of engineering precision, product intuition, and leadership. I specialize in building high-performance, scalable, and user-centric web applications, consistently delivering impact in fast-paced environments. Whether collaborating across teams or leading a feature from scratch, I ensure every solution I craft is robust, maintainable, and aligned with business goals.
+              With over {experienceYear.years}.{Math.round((experienceYear.months / 12) * 10)} years of versatile, hands-on experience across multiple modern tech stacks, I bring a solid blend of engineering precision, product intuition, and leadership. I specialize in building high-performance, scalable, and user-centric web applications, consistently delivering impact in fast-paced environments. Whether collaborating across teams or leading a feature from scratch, I ensure every solution I craft is robust, maintainable, and aligned with business goals.
             </p>
             <div className="mt-5">
               <Link
