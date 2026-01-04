@@ -1,12 +1,9 @@
-// src/api/contactApi.ts
 import axios from "axios";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_MONGO_URL.replace(/\/api$/, "");
 
 export const fetchAllContacts = async () => {
   const res = await axios.get(`${API_BASE_URL}/getContacts`);
   console.log("Fetched all contacts:", res.data);
-
-  // ✅ MUST return array only
   return res.data.contacts;
 };
 
