@@ -16,7 +16,7 @@ export const education = [
     duration: "Aug 2016 – July 2020",
     degree: "Bachelor's of Technology",
     college: "Bengal College of Engineering and Technology",
-    university: "Maulana Abul Kalam Azaad University of Technology",
+    university: "Maulana Abul Kalam Azaad University of Technology (Formaly west Bengal University of Technology)",
   },
   {
     duration: "Nov 2021 – July 2022",

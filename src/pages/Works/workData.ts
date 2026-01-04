@@ -10,15 +10,15 @@ import AILogo from '../../assets/CompanyLogo/aiLogo.png'
 
 export const projects = [
   {
-    name: 'StorTrack',
+    name: 'Self‑Storage Discovery Platform',
     image: storeTrack,
-    link: 'https://www.stortrack.com/',
+    link: '',
     githubLink: '',
     tags: ['JavaScript','React','mapbox.js', 'Material UI'],
     features: ['Protected Routes', 'Lazy Loading', 'Dynamic Routing'],
-    organisationWorkedWith: "Aggregate Intelligence",
+    organisationWorkedWith: "Confidential Client",
     organisationLogo: AILogo,
-    description: "Stortrack is a selfstorge platform. It helps users to find nearby place to store house goods.",
+    description: "A location-based web platform designed to help users discover nearby self-storage options for safely storing household items. The system focuses on performance, usability, and map-driven search experience.",
   },
   {
     name: 'Earning Beats',
@@ -29,7 +29,7 @@ export const projects = [
     features: ['Protected Routes', 'Lazy Loading', 'Role Beased Access Control (RBAC)', 'Dynamic Routing'],
     organisationWorkedWith: "Pando India Software Consultants",
     organisationLogo: PandoIndia,
-    description: "Earning Beats is a visual stock market analyser. It helps portfolio managers make trade recommendations for their clients.",
+    description: "Earning Beats is a stock market analysis platform that helps portfolio managers analyze data and make better trade decisions for their clients.",
   },
   {
     name: 'Zamplia',
@@ -40,7 +40,7 @@ export const projects = [
     features: [''],
     organisationWorkedWith: "Pando India Software Consultants",
     organisationLogo: PandoIndia,
-    description: "This online survey app integrates multiple vendors (Dynata, Voxco, Precision, Tap Research, Market Cube) providing diverse audience segments with varying qualifications, age groups, and more.",
+    description: "Zamplia is an online survey platform that connects with multiple vendors to provide access to different audience groups based on age, qualifications, and other criteria.",
   },
   {
     name: 'Game Dashboard',
@@ -50,7 +50,7 @@ export const projects = [
     features: [''],
     organisationWorkedWith: "NMS Games Private Limited",
     organisationLogo: NmsGames,
-    description: 'I transitioned a PHP-based dashboard into a contemporary React.js application. This dashboard serves as a management interface for game app owners, enabling them to efficiently manage their Android game app. Through this web-based dashboard, administrators can conduct various tasks such as updating, verifying, and authenticating users via Aadhar details. Additionally, they have the ability to perform actions such as blocking users, as well as checking and managing user details, including points, currency, and status, among other functionalities.',
+    description: "This project involved converting an existing PHP dashboard into a modern React.js application. The dashboard allows game app owners to manage users, verify details, control access, and monitor user data such as points, currency, and account status.",
   },
   {
     name: 'Sarkari Filing',
@@ -60,6 +60,6 @@ export const projects = [
     features: ['Dropdown List', 'Mobile Responsive', 'Smooth scroll'],
     organisationWorkedWith: "Sarkari Filing",
     organisationLogo: sarkariFilingLogo,
-    description: 'In developing the landing page for Sarkari Filings, I employed a blend of creativity and precision, harnessing plain CSS and HTML within the Next.js framework to construct a captivating user experience. The header and footer sections were meticulously crafted to frame the page with intuitive navigation and essential information, ensuring seamless exploration for users. Introducing an element of interactivity, I integrated a dropdown list feature, enhanced with subtle animations to elevate user engagement and provide a dynamic browsing experience. These animations, while light, add a touch of elegance and modernity to the UI, complementing the overall aesthetic. By combining innovative design elements with industry-standard coding practices, the landing page of Sarkari Filings sets the stage for a seamless journey through government form submissions, enticing users to engage further with the platforms intuitive functionality and streamlined workflows',
+    description: "Sarkari Filing is a landing page built using Next.js, HTML, and CSS. It provides clear navigation, responsive design, and interactive elements like dropdowns with smooth animations to guide users through government form services easily.",
   },
 ];

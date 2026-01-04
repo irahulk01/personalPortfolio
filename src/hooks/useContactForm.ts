@@ -1,6 +1,6 @@
 // src/hooks/useContactForm.ts
 import { useState } from "react";
-import { fetchAllContacts, submitContactForm } from "../api/contactApi.ts";
+import { submitContactForm } from "../api/contactApi.ts";
 
 export const useContactForm = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -18,30 +18,22 @@ export const useContactForm = () => {
     setLoading(true);
 
     try {
-      const allContacts = await fetchAllContacts();
-      const emailExists = allContacts.some((c: any) => c.email === data.email);
-      const phoneExists = allContacts.some((c: any) => c.phoneNumber === data.phoneNumber);
-
-      if (emailExists) {
-        setDuplicateError("This email already exists.");
-        return false;
-      }
-
-      if (phoneExists) {
-        setDuplicateError("This phone number already exists.");
-        return false;
-      }
-
       const res = await submitContactForm(data);
+
       if (res.status === 201) {
         setSuccessMessage("Form submitted successfully!");
         return true;
-      } else {
-        setDuplicateError("Submission failed. Please try again.");
-        return false;
       }
-    } catch (err) {
-      setDuplicateError("Something went wrong.");
+
+      setDuplicateError("Submission failed. Please try again.");
+      return false;
+    } catch (err: any) {
+      // backend duplicate email handling
+      if (err?.response?.status === 409) {
+        setDuplicateError("This email already exists.");
+      } else {
+        setDuplicateError("Something went wrong. Please try again.");
+      }
       return false;
     } finally {
       setLoading(false);
