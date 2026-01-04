@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import profile from "../../assets/Profile/profile2.jpg";
 import { HiOutlineMinus } from "react-icons/hi";
-import { skills } from "./skillData";
+import { skills } from "../../data/skillData";
 import { Link } from "react-router-dom";
 import "./About.css";
 import experienceYear from "../../utills/experienceYear";

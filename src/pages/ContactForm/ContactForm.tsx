@@ -40,6 +40,7 @@ export default function ContactForm() {
   });
 
   const onSubmit = async (data: FormData) => {
+    console.log(data, "formdata")
     const success = await handleContactSubmit(data);
     if (success) reset();
   };
