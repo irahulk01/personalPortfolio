@@ -9,6 +9,8 @@ const About = lazy(() => import("./pages/About/About"));
 const Contact = lazy(() => import("./pages/ContactForm/Contact"));
 const Resume = lazy(() => import("./pages/Resume/Resume"));
 const Work = lazy(() => import("./pages/Works/Work"));
+const Recruiters = lazy(() => import("./pages/Recruiters/Recruiters.tsx"));
+
 
 function AppRoutes() {
   return (
@@ -21,6 +23,14 @@ function AppRoutes() {
           </Suspense>
         }
       >
+        <Route
+          path="/recruiters"
+          element={
+            <Suspense fallback={<Loader />}>
+              <Recruiters />
+            </Suspense>
+          }
+        />
         <Route
           index
           element={

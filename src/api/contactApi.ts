@@ -1,10 +1,19 @@
 // src/api/contactApi.ts
 import axios from "axios";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_LOCAL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_MONGO_URL;
+
+// export const fetchAllContacts = async () => {
+//   const res = await axios.get(`${API_BASE_URL}/getContacts`);
+//   console.log("Fetched all contacts:", res.data);
+//   return res.data;
+// };
 
 export const fetchAllContacts = async () => {
   const res = await axios.get(`${API_BASE_URL}/getContacts`);
-  return res.data;
+  console.log("Fetched all contacts:", res.data);
+
+  // ✅ MUST return array only
+  return res.data.contacts;
 };
 
 export const submitContactForm = async (data: {
