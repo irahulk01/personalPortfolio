@@ -17,11 +17,15 @@ export const education = [
     degree: "Bachelor's of Technology",
     college: "Bengal College of Engineering and Technology",
     university: "Maulana Abul Kalam Azaad University of Technology (Formaly west Bengal University of Technology)",
+  },  {
+    duration: "2015",
+    degree: "Higher Secondary (12th)",
+    college: "Badri Narayan Saha DAV Public School, CBSE",
   },
   {
-    duration: "Nov 2021 – July 2022",
-    degree: "Higher Secondary School Certificate",
-    college: "Badri Narayan Saha DAV Public School",
+    duration: "2013",
+    degree: "Secondary (10th)",
+    college: "Badri Narayan Saha DAV Public School, CBSE",
   },
 ];
 
