@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import resumePDF from '/src/assets/Resume/rahulKumarUI.pdf'; 
+import resumePDF from '/src/assets/Resume/Rahul_kumar_UI.pdf'; 
 
 export const Resume = () => {
     const [showProgressBar, setShowProgressBar] = useState(false);
@@ -20,7 +20,7 @@ export const Resume = () => {
             .then(() => {
                 const link = document.createElement('a');
                 link.href = resumePDF; 
-                link.download = 'Rahul_cv.pdf';
+                link.download = 'Rahul_Kumar_CV.pdf';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
