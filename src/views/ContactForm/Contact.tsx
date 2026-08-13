@@ -3,7 +3,6 @@
 import { BsArrowRight } from 'react-icons/bs';
 import ContactForm from './ContactForm';
 import SocialMedia from './SocailMedia';
-import Link from 'next/link';
 
 export default function Contact() {
   return (
