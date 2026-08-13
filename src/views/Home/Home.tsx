@@ -8,6 +8,7 @@ import SocialMediaIcons from "../../component/SocialMediaIcons/SocialMediaIcons"
 import { HiOutlineMinus } from "react-icons/hi";
 import { Resume } from "../../component/ResumeButton/ResumeButton";
 import useVisitCount from "../../hooks/useVisitCount";
+import { AnimatedVisitCounter } from "../../component/AnimatedVisitCounter/AnimatedVisitCounter";
 
 const Home = () => {
   const viewCount = useVisitCount();
@@ -76,17 +77,17 @@ const Home = () => {
         transition={{ delay: 1, duration: 0.5 }}
       >
         <SocialMediaIcons />
-        <div className="mt-2 text-sm text-textColor/90 font-medium">
-          {viewCount !== null ? (
-            <div className="transition-opacity duration-500 opacity-100">
-              <span className="font-semibold">Visit Count:</span> {viewCount}
-            </div>
-          ) : (
-            <div className="transition-opacity duration-500 opacity-0">
-              <span className="font-semibold">Visit Count:</span> Loading...
-            </div>
-          )}
-        </div>
+        {viewCount !== null && (
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="mt-2 text-sm text-textColor/90 font-medium flex items-center gap-1.5"
+          >
+            <span className="font-semibold">Visit Count:</span>
+            <AnimatedVisitCounter count={viewCount} />
+          </motion.div>
+        )}
       </motion.div>
     </motion.main>
   );

@@ -14,8 +14,13 @@ const useVisitCount = () => {
 
   const mutation = useMutation({
     mutationFn: increaseViewCountIfNew,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["visitCount"] });
+    onSuccess: (newCount) => {
+      if (newCount !== null) {
+        // Set updated count directly into React Query cache for live +1 count-up animation!
+        queryClient.setQueryData(["visitCount"], newCount);
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["visitCount"] });
+      }
     },
   });
 

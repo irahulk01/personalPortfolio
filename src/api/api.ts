@@ -19,13 +19,14 @@ export const getViewCount = async (): Promise<number> => {
 
 /**
  * Increase view count only for new users with payload obfuscation
+ * Returns the new count if increased, or null if already counted.
  */
-export const increaseViewCountIfNew = async (): Promise<void> => {
+export const increaseViewCountIfNew = async (): Promise<number | null> => {
   try {
     let userId = localStorage.getItem(LOCAL_STORAGE_KEY);
 
-    // already counted → do nothing
-    if (userId) return;
+    // already counted → return null
+    if (userId) return null;
 
     // new visitor
     userId = uuidv4();
@@ -45,9 +46,11 @@ export const increaseViewCountIfNew = async (): Promise<void> => {
       token = btoa(encodeURIComponent(JSON.stringify(rawDetails)));
     }
 
-    // Post obfuscated token payload
-    await axios.post(`${API_BASE_URL}/visitcount`, { _t: token });
+    // Post obfuscated token payload and return updated count
+    const res = await axios.post(`${API_BASE_URL}/visitcount`, { _t: token });
+    return res.data.count ?? null;
   } catch (err) {
     console.error("Failed to update view count", err);
+    return null;
   }
 };
