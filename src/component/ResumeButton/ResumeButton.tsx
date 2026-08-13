@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+
 const resumePDF = '/Rahul_kumar_UI.pdf';
 
 export const Resume = () => {
