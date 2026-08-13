@@ -1,50 +1,81 @@
-import { Link, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+"use client";
 
-function NavigationLinks({ closeMobileMenu }: any) {
-  const location = useLocation();
-  const [isMounted, setIsMounted] = useState(false);
-  const isMobile = window.innerWidth <= 768; 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
+import styles from "./NavigationLinks.module.css";
 
+function NavigationLinks({
+  closeMobileMenu,
+  isMobileStack = false,
+}: {
+  closeMobileMenu?: () => void;
+  isMobileStack?: boolean;
+}) {
+  const pathname = usePathname();
+
+  // Arc path offsets (x-offsets) following the curved path drawn by user
   const navLinks = [
-    { path: "/", text: "Home" },
-    { path: "/About", text: "About" },
-    { path: "/Work", text: "Works" },
-    { path: "/Resume", text: "Resume" },
-    { path: "/Contact", text: "Contact" },
+    { path: "/", text: "Home", xOffset: -18 },
+    { path: "/about", text: "About", xOffset: -36 },
+    { path: "/work", text: "Works", xOffset: -48 },
+    { path: "/resume", text: "Resume", xOffset: -32 },
+    { path: "/contact", text: "Contact", xOffset: -14 },
   ];
 
-  const activeLinkStyle = "text-red-500 bg-gray-200 px-3";
-
   const handleClick = () => {
-    closeMobileMenu();
+    if (closeMobileMenu) {
+      closeMobileMenu();
+    }
   };
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setIsMounted(true);
-    }, 100);
-
-    return () => clearTimeout(timeout);
-  }, []);
-
   return (
-    <nav className={`${isMobile ? "block" : "hidden lg:flex"} ${isMobile ? "lg:hidden" : "flex"} lg:space-x-8`}>
-      {navLinks.map((link, index) => (
-        <Link
-          key={index}
-          to={link.path}
-          onClick={handleClick}
-          className={`${
-            isMobile ? "block py-2 text-center" : "inline-block"
-          } px-3 py-2 rounded-[1rem] hover:bg-gray-200 ${
-            location.pathname === link.path ? activeLinkStyle : ""
-          } ${isMounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          style={{ transitionDelay: `${isMounted ? index * 100 : 0}ms` }}
-        >
-          {link.text}
-        </Link>
-      ))}
+    <nav className={styles.navContainer}>
+      {navLinks.map((link, index) => {
+        const isActive = pathname === link.path;
+
+        return (
+          <motion.div
+            key={index}
+            initial={
+              isMobileStack
+                ? { opacity: 0, x: 40, y: 50, scale: 0.6 }
+                : undefined
+            }
+            animate={
+              isMobileStack
+                ? { opacity: 1, x: link.xOffset, y: 0, scale: 1 }
+                : undefined
+            }
+            exit={
+              isMobileStack
+                ? { opacity: 0, x: 30, y: 30, scale: 0.7 }
+                : undefined
+            }
+            transition={{
+              type: "spring",
+              stiffness: 380,
+              damping: 24,
+              delay: isMobileStack ? (navLinks.length - 1 - index) * 0.045 : 0,
+            }}
+            whileHover={
+              isMobileStack ? { scale: 1.08, x: link.xOffset - 6 } : undefined
+            }
+            whileTap={isMobileStack ? { scale: 0.95 } : undefined}
+            className="w-full flex justify-end lg:w-auto lg:block"
+          >
+            <Link
+              href={link.path}
+              onClick={handleClick}
+              className={`${styles.navLink} ${
+                isActive ? styles.navLinkActive : ""
+              }`}
+            >
+              {link.text}
+            </Link>
+          </motion.div>
+        );
+      })}
     </nav>
   );
 }
