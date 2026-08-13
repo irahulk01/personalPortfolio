@@ -38,9 +38,8 @@
 }
 
 @layer components {
-  /* Apple Liquid Glass Water Droplet Effect */
   .glass-header {
-    @apply fixed top-0 left-0 right-0 z-50 bg-transparent transition-all duration-300 pointer-events-none p-3 sm:p-4;
+    @apply fixed top-0 left-0 right-0 z-50 bg-transparent transition-all duration-300 pointer-events-none;
   }
 
   .water-droplet-bar {

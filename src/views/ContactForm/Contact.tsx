@@ -6,49 +6,36 @@ import SocialMedia from './SocailMedia';
 
 export default function Contact() {
   return (
-    <>
-      {/* Desktop Screen */}
-      <section className="hidden lg:flex items-center h-screen">
-        <section className="w-1/2 p-8 pr-24 flex justify-end items-center">
-          <div className="flex flex-col items-start max-w-md">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4 ">
-              Let’s make something new, different, and more meaningful.
-            </h2>
-            <p className="text-gray-600 mb-6 text-2xl font-bold font-caviateFont">
-              Whether you have a project in mind, a question, or just want to say hello, I’d love to hear from you.
-            </p>
-            <button className="flex items-center bg-highLighter hover:bg-[#ff577f] text-white font-bold py-2 px-4 rounded-full shadow-lgtransition-colors">
-              Say Hello <BsArrowRight className="ml-2" />
-            </button>
-          </div>
-        </section>
-        <section className="w-1/2">
-          <ContactForm />
-        </section>
-      </section>
+    <div className="w-full min-h-[calc(100vh-120px)] flex flex-col justify-between py-2 lg:py-4 gap-6">
+      {/* Top Main Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center my-auto">
+        {/* Left Info Column */}
+        <div className="flex flex-col items-start max-w-lg mx-auto lg:mx-0">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-darkHeadingColor mb-4 leading-tight">
+            Let’s make something new, different & meaningful.
+          </h2>
+          <p className="text-gray-600 mb-6 text-xl sm:text-2xl font-bold font-caviateFont">
+            Whether you have a project in mind, a question, or just want to say hello, I’d love to hear from you.
+          </p>
+          <a
+            href="mailto:irahulkv@gmail.com"
+            className="inline-flex items-center gap-2.5 bg-highLighter hover:bg-[#e00236] text-white font-medium px-6 py-2.5 rounded-full text-base shadow-[0_8px_20px_rgba(255,3,62,0.3)] hover:shadow-[0_12px_25px_rgba(255,3,62,0.4)] transition-all duration-200 group"
+          >
+            <span>Say Hello</span>
+            <BsArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </a>
+        </div>
 
-      {/* Mobile Screen */}
-      <main className="flex flex-col items-center justify-center lg:hidden">
-        <section className="w-full p-8 text-center">
-          <div className="flex flex-col items-start max-w-md">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              Let’s make something new, different, and more meaningful.
-            </h2>
-            <p className="text-lg text-gray-600 mb-6 font-caviateFont">
-              Whether you have a project in mind, a question, or just want to say hello, I’d love to hear from you.
-            </p>
-            <button className="flex items-center bg-highLighter hover:bg-[#ff577f] text-white py-2 px-4 rounded-full shadow-lg transition-colors">
-              Say Hello <BsArrowRight className="ml-2" />
-            </button>
-          </div>
-        </section>
-        <section className="w-full">
+        {/* Right Form Column */}
+        <div className="w-full max-w-md mx-auto">
           <ContactForm />
-        </section>
-      </main>
-      <section className="socialMedia bg-gray-100 flex-none w-full h-[12rem] lg:h-[11rem]">
+        </div>
+      </div>
+
+      {/* Bottom Compact Social & Contact Footer */}
+      <div className="w-full mt-auto">
         <SocialMedia />
-      </section>
-    </>
+      </div>
+    </div>
   );
 }

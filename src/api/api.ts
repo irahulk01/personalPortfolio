@@ -18,22 +18,39 @@ export const getViewCount = async (): Promise<number> => {
 };
 
 /**
- * Increase view count only for new users
+ * Increase view count only for new users with payload obfuscation
+ * Returns the new count if increased, or null if already counted.
  */
-export const increaseViewCountIfNew = async (): Promise<void> => {
+export const increaseViewCountIfNew = async (): Promise<number | null> => {
   try {
     let userId = localStorage.getItem(LOCAL_STORAGE_KEY);
 
-    // already counted → do nothing
-    if (userId) return;
+    // already counted → return null
+    if (userId) return null;
 
     // new visitor
     userId = uuidv4();
     localStorage.setItem(LOCAL_STORAGE_KEY, userId);
 
-    // increment count
-    await axios.post(`${API_BASE_URL}/visitcount`);
+    // Obfuscate telemetry payload so Network tab inspects see encrypted token
+    let token = "";
+    if (typeof window !== "undefined") {
+      const rawDetails = {
+        sr: `${window.screen.width}x${window.screen.height}`,
+        vp: `${window.innerWidth}x${window.innerHeight}`,
+        pr: window.devicePixelRatio || 1,
+        lg: navigator.language || "Unknown",
+        tz: Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown",
+        rf: document.referrer || "Direct / Bookmark",
+      };
+      token = btoa(encodeURIComponent(JSON.stringify(rawDetails)));
+    }
+
+    // Post obfuscated token payload and return updated count
+    const res = await axios.post(`${API_BASE_URL}/visitcount`, { _t: token });
+    return res.data.count ?? null;
   } catch (err) {
     console.error("Failed to update view count", err);
+    return null;
   }
 };

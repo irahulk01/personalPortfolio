@@ -106,43 +106,43 @@ const About = () => {
           </div>
         </div>
       </div>
-<div className="mt-[1rem] lg:px-20">
-  {["Language", "Framework", "Backend"].map((category) => (
-    <div key={category} className="mb-10">
-      <h2 className="text-xl font-bold text-darkHeadingColor mb-4">
-        {category === "Language"
-          ? "Languages"
-          : category === "Framework"
-          ? "Tools & Libraries"
-          : "Backend"}
-      </h2>
-      <div className="grid sm:grid-cols-2 gap-x-20">
-        {skills
-          .filter((skill) => skill.category === category)
-          .map((skill, index) => (
-            <div key={index} className="mb-4">
-              <div className="text-left font-semibold flex items-center gap-2 p-2">
-                <span className="text-[2rem] flex items-center">
-                  {skill.icon}
-                </span>
-                <span>{skill.name}</span>
-              </div>
-              <div className="h-2 bg-gray-300 rounded-full">
-                <motion.div
-                  className="h-full bg-[#3e4455] rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{
-                    width: `${skill.percentage}%`,
-                  }}
-                  transition={{ duration: 1, ease: "easeInOut" }}
-                ></motion.div>
-              </div>
+      <div className="mt-[1rem] lg:px-20">
+        {["Language", "Framework", "Backend"].map((category) => (
+          <div key={category} className="mb-10">
+            <h2 className="text-xl font-bold text-darkHeadingColor mb-4">
+              {category === "Language"
+                ? "Languages"
+                : category === "Framework"
+                  ? "Tools & Libraries"
+                  : "Backend"}
+            </h2>
+            <div className="grid sm:grid-cols-2 gap-x-20">
+              {skills
+                .filter((skill) => skill.category === category)
+                .map((skill, index) => (
+                  <div key={index} className="mb-4">
+                    <div className="text-left font-semibold flex items-center gap-2 p-2">
+                      <span className="text-[2rem] flex items-center">
+                        {skill.icon}
+                      </span>
+                      <span>{skill.name}</span>
+                    </div>
+                    <div className="h-2 bg-gray-300 rounded-full">
+                      <motion.div
+                        className="h-full bg-[#3e4455] rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{
+                          width: `${skill.percentage}%`,
+                        }}
+                        transition={{ duration: 1, ease: "easeInOut" }}
+                      ></motion.div>
+                    </div>
+                  </div>
+                ))}
             </div>
-          ))}
+          </div>
+        ))}
       </div>
-    </div>
-  ))}
-</div>
       <div className="mt-5 flex justify-end">
         <Link
           href="/work"
