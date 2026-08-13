@@ -1,24 +1,63 @@
 @import url('https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,600;1,500&family=Assistant:wght@200;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap');
 
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif, "Caveat", cursive;
   line-height: 1.5;
   font-weight: 400;
 
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #edf1fd;
+  /* Theme Design System Tokens */
+  --bg-app: #edf1fd;
+  --bg-card: #f4f7fe;
+  --bg-nav-active: #dbe4fc;
+  --bg-nav-hover: #e2ebfd;
+  --color-text-primary: #4e5463;
+  --color-text-header: #8c90aa;
+  --color-dark-heading: #3e4355;
+  --color-highlighter: #ff033e;
+  --border-subtle: rgba(140, 144, 170, 0.18);
+
+  color: var(--color-text-primary);
+  background-color: var(--bg-app);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+}
+
+@layer base {
+  body {
+    @apply bg-[#edf1fd] text-textColor min-h-screen antialiased;
+  }
+}
+
+@layer components {
+  /* Apple Liquid Glass Water Droplet Effect */
+  .glass-header {
+    @apply fixed top-0 left-0 right-0 z-50 bg-transparent transition-all duration-300 pointer-events-none p-3 sm:p-4;
+  }
+
+  .water-droplet-bar {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(237, 241, 253, 0.4) 50%,
+      rgba(255, 255, 255, 0.3) 100%
+    );
+    backdrop-filter: blur(20px) saturate(190%) contrast(105%);
+    -webkit-backdrop-filter: blur(20px) saturate(190%) contrast(105%);
+    border-radius: 9999px;
+    border: 1.5px solid rgba(255, 255, 255, 0.75);
+    box-shadow:
+      0 12px 32px 0 rgba(31, 38, 135, 0.08),
+      0 4px 12px 0 rgba(0, 0, 0, 0.03),
+      inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -1.5px 2px 0 rgba(140, 144, 170, 0.15);
+  }
 }

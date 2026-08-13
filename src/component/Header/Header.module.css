@@ -1,0 +1,156 @@
+.headerContainer {
+  width: 100%;
+  color: var(--color-text-header);
+  font-weight: 600;
+  background-color: transparent;
+  pointer-events: none;
+}
+
+/* Desktop Top Liquid Water Pill Bar */
+.desktopWaterBar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .desktopWaterBar {
+    display: flex;
+    max-width: 72rem;
+    margin-left: auto;
+    margin-right: auto;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 1.25rem;
+    border-radius: 9999px;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.65) 0%,
+      rgba(237, 241, 253, 0.5) 50%,
+      rgba(255, 255, 255, 0.4) 100%
+    );
+    backdrop-filter: blur(20px) saturate(190%) contrast(105%);
+    -webkit-backdrop-filter: blur(20px) saturate(190%) contrast(105%);
+    border: 1.5px solid rgba(255, 255, 255, 0.85);
+    box-shadow:
+      0 12px 32px 0 rgba(31, 38, 135, 0.08),
+      0 4px 12px 0 rgba(0, 0, 0, 0.03),
+      inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.95);
+    pointer-events: auto;
+  }
+}
+
+.logoWrapper {
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.logoBox {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 1024px) {
+  .logoBox {
+    width: 2.85rem;
+    height: 2.85rem;
+  }
+}
+
+.logoLink {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  overflow: hidden;
+  display: block;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease;
+}
+
+.logoLink:hover {
+  transform: scale(1.06);
+}
+
+.desktopNav {
+  pointer-events: auto;
+}
+
+/* Mobile Top Floating Logo */
+.mobileTopLogo {
+  position: fixed;
+  top: 1.25rem;
+  left: 1.25rem;
+  z-index: 50;
+  pointer-events: auto;
+}
+
+@media (min-width: 1024px) {
+  .mobileTopLogo {
+    display: none;
+  }
+}
+
+/* Mobile Bottom Floating Circular Trigger Button (UI Light Glass Theme) */
+.mobileBottomBar {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.25rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
+}
+
+@media (min-width: 1024px) {
+  .mobileBottomBar {
+    display: none;
+  }
+}
+
+.darkGlassTriggerBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1.5px solid rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 12px 32px 0 rgba(62, 67, 85, 0.18),
+    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.95);
+  color: var(--color-dark-heading);
+  cursor: pointer;
+  outline: none;
+}
+
+.darkGlassTriggerBtn:hover {
+  background: #ffffff;
+  box-shadow:
+    0 16px 36px 0 rgba(62, 67, 85, 0.22),
+    inset 0 1.5px 1.5px 0 #ffffff;
+}
+
+/* Arc Stack Menu Container */
+.darkGlassStackMenu {
+  position: fixed;
+  bottom: 5.5rem;
+  right: 1.25rem;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.625rem;
+  pointer-events: auto;
+}
+
+@media (min-width: 1024px) {
+  .darkGlassStackMenu {
+    display: none;
+  }
+}

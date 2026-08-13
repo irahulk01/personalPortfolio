@@ -1,5 +1,8 @@
+"use client";
+
 import { useState } from 'react';
-import resumePDF from '/src/assets/Resume/Rahul_kumar_UI.pdf'; 
+
+const resumePDF = '/Rahul_kumar_UI.pdf';
 
 export const Resume = () => {
     const [showProgressBar, setShowProgressBar] = useState(false);
