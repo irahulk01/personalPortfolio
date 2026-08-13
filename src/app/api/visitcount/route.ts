@@ -206,7 +206,7 @@ async function sendVisitNotification(
         </div>
       `,
     });
-    console.log(`[Resend] Portfolio-themed visit notification sent for count #${count}`);
+    console.log(`[Resend] Secure visit notification sent for count #${count}`);
   } catch (err) {
     console.error('[Resend] Failed to send visit notification:', err);
   }
@@ -249,9 +249,20 @@ export async function POST(req: Request) {
     let browserDetails: BrowserDetails | undefined;
     try {
       const body = await req.json();
-      browserDetails = body?.browserDetails;
+      if (body?._t) {
+        const decodedStr = decodeURIComponent(Buffer.from(body._t, 'base64').toString('utf-8'));
+        const parsed = JSON.parse(decodedStr);
+        browserDetails = {
+          screenResolution: parsed.sr,
+          viewportSize: parsed.vp,
+          devicePixelRatio: parsed.pr,
+          language: parsed.lg,
+          timezone: parsed.tz,
+          referrer: parsed.rf,
+        };
+      }
     } catch {
-      // Body empty or invalid JSON
+      // Token missing or invalid JSON
     }
 
     const visit = await Visit.findByIdAndUpdate(

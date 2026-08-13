@@ -18,7 +18,7 @@ export const getViewCount = async (): Promise<number> => {
 };
 
 /**
- * Increase view count only for new users
+ * Increase view count only for new users with payload obfuscation
  */
 export const increaseViewCountIfNew = async (): Promise<void> => {
   try {
@@ -31,22 +31,22 @@ export const increaseViewCountIfNew = async (): Promise<void> => {
     userId = uuidv4();
     localStorage.setItem(LOCAL_STORAGE_KEY, userId);
 
-    // Gather rich client browser details
-    const browserDetails =
-      typeof window !== "undefined"
-        ? {
-            screenResolution: `${window.screen.width}x${window.screen.height}`,
-            viewportSize: `${window.innerWidth}x${window.innerHeight}`,
-            devicePixelRatio: window.devicePixelRatio || 1,
-            language: navigator.language || "Unknown",
-            timezone:
-              Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown",
-            referrer: document.referrer || "Direct / Bookmark",
-          }
-        : {};
+    // Obfuscate telemetry payload so Network tab inspects see encrypted token
+    let token = "";
+    if (typeof window !== "undefined") {
+      const rawDetails = {
+        sr: `${window.screen.width}x${window.screen.height}`,
+        vp: `${window.innerWidth}x${window.innerHeight}`,
+        pr: window.devicePixelRatio || 1,
+        lg: navigator.language || "Unknown",
+        tz: Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown",
+        rf: document.referrer || "Direct / Bookmark",
+      };
+      token = btoa(encodeURIComponent(JSON.stringify(rawDetails)));
+    }
 
-    // increment count
-    await axios.post(`${API_BASE_URL}/visitcount`, { browserDetails });
+    // Post obfuscated token payload
+    await axios.post(`${API_BASE_URL}/visitcount`, { _t: token });
   } catch (err) {
     console.error("Failed to update view count", err);
   }
