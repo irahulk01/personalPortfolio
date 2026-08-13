@@ -31,8 +31,22 @@ export const increaseViewCountIfNew = async (): Promise<void> => {
     userId = uuidv4();
     localStorage.setItem(LOCAL_STORAGE_KEY, userId);
 
+    // Gather rich client browser details
+    const browserDetails =
+      typeof window !== "undefined"
+        ? {
+            screenResolution: `${window.screen.width}x${window.screen.height}`,
+            viewportSize: `${window.innerWidth}x${window.innerHeight}`,
+            devicePixelRatio: window.devicePixelRatio || 1,
+            language: navigator.language || "Unknown",
+            timezone:
+              Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown",
+            referrer: document.referrer || "Direct / Bookmark",
+          }
+        : {};
+
     // increment count
-    await axios.post(`${API_BASE_URL}/visitcount`);
+    await axios.post(`${API_BASE_URL}/visitcount`, { browserDetails });
   } catch (err) {
     console.error("Failed to update view count", err);
   }

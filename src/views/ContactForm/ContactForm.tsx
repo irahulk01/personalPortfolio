@@ -47,37 +47,38 @@ export default function ContactForm() {
   };
 
   return (
-    <form className="max-w-md mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit(onSubmit)}>
+    <form className="w-full bg-white/90 backdrop-blur-md shadow-lg rounded-2xl p-5 border border-white/80" onSubmit={handleSubmit(onSubmit)}>
       {/* Name */}
-      <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2">
+      <div className="mb-3">
+        <label className="block text-gray-700 text-xs font-bold mb-1">
           Your Name <span className="text-red-500">*</span>
         </label>
         <input
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          autoFocus
+          className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-highLighter focus:border-highLighter"
           placeholder="Enter your name"
           {...register("name")}
         />
-        {errors.name && <p className="text-red-500">{errors.name.message}</p>}
+        {errors.name && <p className="text-red-500 text-xs mt-0.5">{errors.name.message}</p>}
       </div>
 
       {/* Email */}
-      <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2">
+      <div className="mb-3">
+        <label className="block text-gray-700 text-xs font-bold mb-1">
           Email <span className="text-red-500">*</span>
         </label>
         <input
           type="email"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-highLighter focus:border-highLighter"
           placeholder="example@example.com"
           {...register("email")}
         />
-        {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+        {errors.email && <p className="text-red-500 text-xs mt-0.5">{errors.email.message}</p>}
       </div>
 
       {/* Phone */}
-      <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2">
+      <div className="mb-3">
+        <label className="block text-gray-700 text-xs font-bold mb-1">
           Phone Number <span className="text-red-500">*</span>
         </label>
         <Controller
@@ -89,44 +90,44 @@ export default function ContactForm() {
               value={field.value}
               onChange={field.onChange}
               containerClass="w-full"
-              inputClass="!w-80% !px-8 !py-2 !border !border-gray-300 !rounded-md !text-sm !shadow-sm !placeholder-gray-400 focus:!outline-none focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500"
-              buttonClass="!border-r !border-gray-300 !bg-white !rounded-l-md"
+              inputClass="!w-full !px-12 !py-1.5 !border !border-gray-300 !rounded-lg !text-sm !shadow-sm !placeholder-gray-400 focus:!outline-none focus:!ring-2 focus:!ring-highLighter focus:!border-highLighter"
+              buttonClass="!border-r !border-gray-300 !bg-white !rounded-l-lg"
               specialLabel=""
               enableSearch
             />
           )}
         />
-        {errors.phoneNumber && <p className="text-red-500">{errors.phoneNumber.message}</p>}
+        {errors.phoneNumber && <p className="text-red-500 text-xs mt-0.5">{errors.phoneNumber.message}</p>}
       </div>
 
       {/* Description */}
-      <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2">
-          Project Description
+      <div className="mb-3">
+        <label className="block text-gray-700 text-xs font-bold mb-1">
+          Send Message
         </label>
         <textarea
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          rows={4}
-          placeholder="Tell us about your project..."
+          className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-highLighter focus:border-highLighter"
+          rows={3}
+          placeholder="Start the Conversation"
           {...register("description")}
         ></textarea>
       </div>
 
       {/* Submit */}
-      <div className="flex justify-center">
+      <div className="flex justify-center mt-4">
         <button
           type="submit"
-          className="bg-[#3e4355] text-white py-2 px-4 rounded-lg hover:bg-[#292e40]"
+          className="w-full bg-[#3e4355] text-white font-semibold py-2 px-4 rounded-xl hover:bg-[#292e40] shadow-md transition-colors text-sm"
           disabled={loading}
         >
-          {loading ? "Submitting..." : "Hire Me"}
+          {loading ? "Submitting..." : "Send Message"}
         </button>
       </div>
 
       {/* Messages */}
-      <div className="mt-4 text-center">
-        {successMessage && <p className="text-green-500">{successMessage}</p>}
-        {duplicateError && <p className="text-red-500">{duplicateError}</p>}
+      <div className="mt-2 text-center text-xs">
+        {successMessage && <p className="text-green-600 font-semibold">{successMessage}</p>}
+        {duplicateError && <p className="text-red-500 font-semibold">{duplicateError}</p>}
       </div>
     </form>
   );

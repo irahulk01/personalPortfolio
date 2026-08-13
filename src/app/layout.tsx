@@ -26,7 +26,7 @@ export default function RootLayout({
               <header className="glass-header py-1 sm:py-2 px-2 sm:px-4">
                 <Header />
               </header>
-              <main className="flex-grow text-textColor px-4 pb-24 lg:pb-4">
+              <main className="flex-grow text-textColor max-w-[72rem] w-full mx-auto px-4 sm:px-6 lg:px-8 pb-24 lg:pb-8 pt-16 lg:pt-20">
                 {children}
               </main>
             </div>
