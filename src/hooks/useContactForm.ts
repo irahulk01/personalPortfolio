@@ -1,6 +1,6 @@
 // src/hooks/useContactForm.ts
 import { useState } from "react";
-import { submitContactForm } from "../api/contactApi.ts";
+import { submitContactForm } from "../api/portfolio";
 
 export const useContactForm = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);

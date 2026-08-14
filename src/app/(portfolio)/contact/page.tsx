@@ -1,4 +1,4 @@
-import Contact from '../../views/ContactForm/Contact';
+import Contact from '../../../views/ContactForm/Contact';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
-import { getViewCount, increaseViewCountIfNew } from "../api/api";
+import { getViewCount, increaseViewCountIfNew } from "../api/portfolio";
 
 const useVisitCount = () => {
   const queryClient = useQueryClient();

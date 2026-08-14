@@ -1,4 +1,4 @@
-import Recruiters from '../../views/Recruiters/Recruiters';
+import Recruiters from '../../../views/Recruiters/Recruiters';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {

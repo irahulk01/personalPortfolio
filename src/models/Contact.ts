@@ -5,6 +5,7 @@ export interface IContact extends mongoose.Document {
   email: string;
   phoneNumber: string;
   description: string;
+  status?: string;
   createdAt: Date;
 }
 
@@ -14,6 +15,7 @@ const ContactSchema = new mongoose.Schema<IContact>(
     email: { type: String, required: true },
     phoneNumber: { type: String, required: true },
     description: { type: String },
+    status: { type: String, default: 'New' },
   },
   { timestamps: true }
 );

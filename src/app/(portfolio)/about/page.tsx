@@ -1,4 +1,4 @@
-import About from '../../views/About/About';
+import About from '../../../views/About/About';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {

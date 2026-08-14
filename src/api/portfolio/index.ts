@@ -54,3 +54,16 @@ export const increaseViewCountIfNew = async (): Promise<number | null> => {
     return null;
   }
 };
+
+/**
+ * Submit Contact Form
+ */
+export const submitContactForm = async (data: {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  description: string;
+}) => {
+  const res = await axios.post(`${API_BASE_URL}/contact`, data);
+  return res;
+};

@@ -12,4 +12,4 @@ const VisitSchema = new mongoose.Schema<IVisit>({
   updatedAt: { type: Date, default: Date.now },
 });
 
-export default mongoose.models.Visit || mongoose.model<IVisit>("Visit", VisitSchema, "portfolio");
+export default mongoose.models.Visit || mongoose.model<IVisit>("Visit", VisitSchema, "visits");

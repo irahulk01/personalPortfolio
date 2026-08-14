@@ -232,23 +232,21 @@ async function sendCombinedSessionEmail({
                   <td style="padding: 10px 16px; font-weight: 600; color: #8c90aa; background-color: rgba(237, 241, 253, 0.4);">🔗 Traffic Source:</td>
                   <td style="padding: 10px 16px; color: #3e4355; font-weight: 700; background-color: rgba(237, 241, 253, 0.4);">${browserDetails?.referrer || 'Direct / Bookmark'}</td>
                 </tr>
-                ${
-                  ip
-                    ? `
+                ${ip
+          ? `
                 <tr>
                   <td style="padding: 10px 16px; font-weight: 600; color: #8c90aa; background-color: #ffffff;">🌐 IP Address:</td>
                   <td style="padding: 10px 16px; color: #3e4355; font-family: monospace; background-color: #ffffff;">${ip}</td>
                 </tr>
                   `
-                    : ''
-                }
+          : ''
+        }
               </table>
             </div>
 
             <!-- Location & Map Section -->
-            ${
-              mapImageUrl
-                ? `
+            ${mapImageUrl
+          ? `
                 <div style="border: 1.5px solid rgba(210, 218, 240, 0.8); border-radius: 18px; overflow: hidden; margin-bottom: 20px;">
                   <div style="padding: 10px 16px; background: rgba(237, 241, 253, 0.6); font-weight: 700; color: #3e4355; font-size: 13.5px; border-bottom: 1px solid rgba(210, 218, 240, 0.8);">
                     📍 Visitor Location: <span style="color: #ff033e;">${locationStr}</span> ${geo?.isp ? `(${geo.isp})` : ''}
@@ -256,12 +254,12 @@ async function sendCombinedSessionEmail({
                   <img src="${mapImageUrl}" alt="Location Map" style="width: 100%; height: 170px; object-fit: cover; display: block;" />
                 </div>
                 `
-                : `
+          : `
                 <div style="background: rgba(237, 241, 253, 0.6); border: 1.5px solid rgba(210, 218, 240, 0.8); border-radius: 18px; padding: 12px 16px; margin-bottom: 20px; font-size: 13.5px; color: #3e4355;">
                   <strong>📍 Location:</strong> <span style="color: #3e4355; font-weight: 600;">${locationStr}</span>
                 </div>
                 `
-            }
+        }
 
             <!-- Page Time & Interest Breakdown Table -->
             <div style="border: 1.5px solid rgba(210, 218, 240, 0.8); border-radius: 18px; overflow: hidden; margin-bottom: 20px;">
@@ -299,7 +297,7 @@ export async function GET() {
   try {
     await connectDB();
     const sessions = await Session.find().sort({ updatedAt: -1 }).limit(100).exec();
-    
+
     let totalTime = 0;
     const pageCounts: Record<string, number> = {};
     let totalCvDownloads = 0;
@@ -343,7 +341,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     await connectDB();
-    
+
     let textBody = '';
     try {
       textBody = await req.text();
