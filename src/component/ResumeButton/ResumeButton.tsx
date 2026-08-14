@@ -11,11 +11,16 @@ export const Resume = () => {
     const handleDownloadClick = () => {
         setShowProgressBar(true);
 
+        // Dispatch telemetry event for session tracker
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('portfolio_resume_downloaded'));
+        }
+
         const downloadFile = () => {
             return new Promise<void>((resolve) => {
                 setTimeout(() => {
                     resolve();
-                }, 3000);
+                }, 1000);
             });
         };
 
@@ -48,10 +53,10 @@ export const Resume = () => {
                 Download CV
             </button>
             {showProgressBar && (
-                <div className="relative w-[7rem] h-2 bg-[#ff577f] mt-3 rounded-full">
+                <div className="relative w-[7rem] h-2 bg-[#ff577f] mt-3 rounded-full overflow-hidden">
                     <div
-                        className="absolute top-0 left-0 h-full bg-highLighter"
-                        style={{ width: `${progressBarValue}%` }} // Use progressBarValue here
+                        className="absolute top-0 left-0 h-full bg-white animate-pulse"
+                        style={{ width: `${progressBarValue}%` }}
                     />
                 </div>
             )}
