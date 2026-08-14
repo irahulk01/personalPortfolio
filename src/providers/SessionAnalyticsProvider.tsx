@@ -100,7 +100,7 @@ export default function SessionAnalyticsProvider({
         body: payload,
         headers: { "Content-Type": "application/json" },
         keepalive: true,
-      }).catch(() => {});
+      }).catch(() => { });
     }
   };
 

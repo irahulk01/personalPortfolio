@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { fetchAllContacts } from "../../api/contactApi";
+import { getAdminContacts } from "../../api/admin";
 
 type Recruiter = {
   _id: string;
@@ -19,8 +19,8 @@ export default function Recruiters() {
   const [sortDesc, setSortDesc] = useState(true);
 
   useEffect(() => {
-    fetchAllContacts()
-      .then((res) => setData(Array.isArray(res) ? res : []))
+    getAdminContacts()
+      .then((res: any) => setData(Array.isArray(res.contacts) ? res.contacts : Array.isArray(res) ? res : []))
       .finally(() => setLoading(false));
   }, []);
 

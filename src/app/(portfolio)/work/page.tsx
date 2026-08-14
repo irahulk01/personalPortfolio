@@ -1,4 +1,4 @@
-import Work from '../../views/Works/Work';
+import Work from '../../../views/Works/Work';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
