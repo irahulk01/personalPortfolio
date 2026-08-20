@@ -89,17 +89,17 @@ export async function POST(req: Request) {
       description: description || '',
     });
 
-    // Send email notification via Resend asynchronously (commented out for now)
-    // try {
-    //   await sendEmailNotification({
-    //     name,
-    //     email,
-    //     phoneNumber,
-    //     description: description || '',
-    //   });
-    // } catch (emailError) {
-    //   console.error('[Resend] Failed to send email notification:', emailError);
-    // }
+    // Send email notification via Resend asynchronously
+    try {
+      await sendEmailNotification({
+        name,
+        email,
+        phoneNumber,
+        description: description || '',
+      });
+    } catch (emailError) {
+      console.error('[Resend] Failed to send email notification:', emailError);
+    }
 
     return NextResponse.json({ success: true, contact: newContact }, { status: 201 });
   } catch (err) {
