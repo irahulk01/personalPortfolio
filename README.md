@@ -8,49 +8,65 @@
 [![Resend](https://img.shields.io/badge/Resend-Email_API-000000?style=for-the-badge&logo=resend&logoColor=white)](https://resend.com/)
 [![Deployment](https://img.shields.io/badge/Netlify-Deployed-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://irahulks.com/)
 
-Welcome to the official repository of my personal engineering portfolio! Built from the ground up using **Next.js 16 App Router**, **TypeScript**, **Lenis Smooth Scroll**, **Framer Motion**, **MongoDB**, and **Resend API**.
+Personal engineering portfolio built with **Next.js 16 App Router**, **TypeScript**, **MongoDB Atlas**, **Framer Motion**, **Lenis Smooth Scroll**, and **Resend API** — featuring a full visitor analytics and session tracking system.
 
-🔗 **Live Portfolio**: [https://irahulks.com/](https://irahulks.com/)
-
----
-
-## ✨ Key Engineering Features & Architecture
-
-### ⚡ Next.js 16 App Router Migration
-- Migrated legacy Vite SPA architecture into Next.js 16 App Router (`src/app/` routes with modular `src/views/` components).
-- Optimized image delivery using Next.js `<Image />` with `sharp` native image transformation.
-
-### 📱 Responsive Mobile Arc Fan-Out Navigation
-- Interactive floating circular glass menu button at the bottom-right for mobile and tablet views.
-- Framer Motion 3D arc path spring physics (`[-18px, -36px, -48px, -32px, -14px]` curve).
-- Smart Dismiss System: Automatically closes the navigation stack when tapping outside or scrolling (>15px threshold).
-
-### 🖥️ Zero-Scroll Viewport Layout System
-- Custom `min-h-[calc(100vh-120px)]` flex grid container for Home and Contact pages.
-- Eliminates vertical scrollbars and white space gaps on desktop and large screens.
-
-### 📊 Real-Time Visitor Analytics & Resend Email Alerts
-- **Database Visitor Counter**: Persists live visitor counts to MongoDB Atlas via Mongoose.
-- **Silent Telemetry & Geolocation**: Server-side IP lookup via `ip-api.com` combined with client browser metrics (screen size, viewport, timezone, language, and traffic source).
-- **Portfolio-Themed Email Dashboard**: Sends styled HTML email notifications to Gmail featuring device icons and OpenStreetMap visual location map previews.
-
-### 📩 Contact Form & Resend API
-- Contact form validation powered by `react-hook-form` and `yup`.
-- Direct email notifications sent via Resend API with `Reply-To` header configured for instant responses inside Gmail.
+🔗 **Live**: [https://irahulks.com/](https://irahulks.com/)
 
 ---
 
-## 🛠️ Tech Stack & Tooling
+## ✨ Features & Architecture
+
+### ⚡ Next.js 16 App Router
+- Migrated from Vite SPA to Next.js 16 App Router with `src/app/` routes and modular `src/views/` components.
+- Optimized image delivery via Next.js `<Image />` with `sharp`.
+
+### 📱 Mobile Navigation
+- Floating circular glass arc menu (bottom-right) for mobile/tablet.
+- Framer Motion spring physics arc path with smart auto-dismiss on outside tap or scroll (>15px).
+
+### 📊 Visitor Analytics & Session Tracking
+
+The portfolio includes a complete real-time visitor analytics pipeline:
+
+**Visit Counter**
+- New visitor detection via a dedicated `localStorage` key (`portfolio_visit_counted`) — separate from the session visitor ID.
+- `localStorage` is set **only after** a successful `POST /api/visitcount` response, preventing false flags on network failure.
+- In-memory promise deduplication prevents concurrent calls from firing duplicate requests.
+- `SessionAnalyticsProvider` is the single owner of the increment trigger — fires on mount across all routes (`/`, `/about`, `/work`, `/resume`, `/contact`).
+
+**Session Tracking**
+- `SessionAnalyticsProvider` tracks time spent per page using `usePathname`, `visibilitychange`, and `beforeunload` events.
+- Sessions are upserted to MongoDB every 30 seconds and on page transitions/tab close via `navigator.sendBeacon`.
+- Stores: `pageBreakdown` (seconds per route), `totalDurationSeconds`, `topPage`, `ip`, `deviceType`, `downloadedResume`, `emailSent`.
+
+**Exit Email (on session end)**
+- A single dark-themed HTML email is sent via Resend when `isFinal: true` and session duration ≥ 2 seconds.
+- `emailSent` flag in MongoDB prevents duplicate emails from concurrent final beacons.
+- Email contains: visitor number, device type, time on site, CV download status, IP + geo-location map, time per page breakdown.
+
+### 📩 Contact Form
+- Validation via `react-hook-form` + `yup`.
+- Duplicate email detection (409 on re-submission).
+- Resend API notification with `Reply-To` header for instant Gmail replies.
+
+### 🛡️ Admin Dashboard
+- Protected `/admin/portfolio` route with cookie-based auth.
+- Displays KPI cards (total visits, contacts, CV downloads, avg session time), traffic trend chart, device breakdown, recent visitor sessions, and contact inbox.
+
+---
+
+## 🛠️ Tech Stack
 
 | Domain | Technology |
 | :--- | :--- |
 | **Framework** | Next.js 16 (App Router) |
 | **Language** | TypeScript 5 |
-| **UI & Styling** | Tailwind CSS 3, CSS Modules, Modern HSL Tokens |
+| **UI & Styling** | Tailwind CSS 3, CSS Modules |
 | **Animations** | Framer Motion 10, Lenis Smooth Scroll |
+| **State / Data** | TanStack React Query v5 |
 | **Database** | MongoDB Atlas, Mongoose 9 |
-| **Email Service** | Resend API, Nodemailer |
-| **Form Handling** | React Hook Form, Yup Validation, React Phone Input 2 |
+| **Email** | Resend API |
+| **Form Handling** | React Hook Form, Yup, React Phone Input 2 |
 | **Deployment** | Netlify (`@netlify/plugin-nextjs`) |
 
 ---
@@ -62,31 +78,36 @@ personalPortfolio/
 ├── public/                 # Static assets & downloadable PDF CV
 ├── src/
 │   ├── api/                # Axios client-side API functions
-│   ├── app/                # Next.js 16 App Router pages & API handlers
-│   │   ├── about/          # /about route
-│   │   ├── contact/        # /contact route
-│   │   ├── resume/         # /resume route
-│   │   ├── work/           # /work route
-│   │   ├── api/            # Serverless API routes (/visitcount, /contact)
-│   │   ├── layout.tsx      # Root layout wrapper with header & Lenis provider
-│   │   └── page.tsx        # / home route
-│   ├── component/          # Reusable components (Header, ResumeButton, etc.)
-│   ├── hooks/              # Custom React hooks (useVisitCount, useContactForm)
-│   ├── lib/                # Database connection helper (mongodb.ts)
-│   ├── models/             # Mongoose schemas (Visit.ts, Contact.ts)
-│   ├── providers/          # Context providers (SmoothScrollProvider, QueryProvider)
-│   └── views/              # Page view components (Home, About, Works, ContactForm)
-├── netlify.toml            # Netlify build configuration
+│   │   ├── portfolio/      # getViewCount, increaseViewCountIfNew, submitContactForm
+│   │   └── admin/          # Admin analytics & login API calls
+│   ├── app/                # Next.js App Router pages & API handlers
+│   │   ├── (portfolio)/    # Portfolio route group with layout
+│   │   ├── admin/          # /admin/portfolio dashboard
+│   │   ├── adminLogin/     # Admin login page
+│   │   └── api/
+│   │       ├── visitcount/ # GET (read count) / POST (increment count)
+│   │       ├── session/    # GET (sessions list) / POST (upsert session + exit email)
+│   │       ├── contact/    # POST (save contact + email notification)
+│   │       └── admin/
+│   │           ├── analytics/  # Aggregated analytics for dashboard
+│   │           └── login/      # Admin auth
+│   ├── component/          # Reusable UI components
+│   ├── hooks/              # useVisitCount, useContactForm
+│   ├── lib/                # MongoDB connection helper
+│   ├── models/             # Mongoose schemas: Visit, Session, Contact
+│   ├── providers/          # SessionAnalyticsProvider, QueryProvider, SmoothScrollProvider
+│   └── views/              # Page views: Home, About, Works, ContactForm, Resume
+├── netlify.toml            # Netlify build config
 ├── next.config.js          # Next.js settings & security headers
-├── tailwind.config.js      # Tailwind theme tokens & color definitions
-└── README.md               # Documentation
+├── tailwind.config.js      # Tailwind theme tokens
+└── README.md
 ```
 
 ---
 
-## 🔑 Environment Variables Setup
+## 🔑 Environment Variables
 
-Create a `.env.local` file in the root directory:
+Create a `.env.local` file in the root:
 
 ```env
 # MongoDB Connection String
@@ -95,39 +116,33 @@ MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/portfolio
 # Resend API Key for Email Notifications
 RESEND_API_KEY=re_your_resend_api_key
 
-# Recipient Email for Inquiry & Visitor Alerts
-CONTACT_NOTIFICATION_EMAIL=irahulkv@gmail.com
+# Recipient Email for Visitor Exit Alerts & Contact Form Notifications
+CONTACT_NOTIFICATION_EMAIL=your@email.com
 ```
 
 ---
 
-## 💻 Local Development Setup
+## 💻 Local Development
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/irahulk01/personalPortfolio.git
-   cd personalPortfolio
-   ```
+```bash
+git clone https://github.com/irahulk01/personalPortfolio.git
+cd personalPortfolio
+npm install
+npm run dev
+```
 
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Run development server**:
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
 ## 🚀 Deployment (Netlify)
 
-This project is configured for seamless deployment on **Netlify** using `@netlify/plugin-nextjs`.
+1. Connect GitHub repo to Netlify.
+2. Set env vars (`MONGO_URI`, `RESEND_API_KEY`, `CONTACT_NOTIFICATION_EMAIL`) in Netlify Site Settings.
+3. Deploy from `staging` or `main` branch.
 
-### Netlify Deployment Configuration (`netlify.toml`):
 ```toml
+# netlify.toml
 [build]
   command = "npm run build"
   publish = ".next"
@@ -136,20 +151,11 @@ This project is configured for seamless deployment on **Netlify** using `@netlif
   package = "@netlify/plugin-nextjs"
 ```
 
-To deploy:
-1. Connect your GitHub repository to Netlify.
-2. Set Environment Variables (`MONGO_URI`, `RESEND_API_KEY`, `CONTACT_NOTIFICATION_EMAIL`) in Netlify Site Configuration.
-3. Deploy branch `staging` or `main`.
-
 ---
 
 ## 👤 Author
 
-**Rahul Kumar**  
-- **Portfolio**: [https://irahulks.com/](https://irahulks.com/)  
-- **Email**: [irahulkv@gmail.com](mailto:irahulkv@gmail.com)  
+**Rahul Kumar**
+- **Portfolio**: [https://irahulks.com/](https://irahulks.com/)
+- **Email**: [irahulkv@gmail.com](mailto:irahulkv@gmail.com)
 - **GitHub**: [@irahulk01](https://github.com/irahulk01)
-
----
-
-*Built with precision, performance, and attention to user experience.* 🚀

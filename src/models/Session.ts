@@ -10,6 +10,7 @@ export interface ISession extends Document {
   ip?: string;
   location?: string;
   deviceType?: string;
+  emailSent?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,6 +26,7 @@ const SessionSchema = new Schema<ISession>(
     ip: { type: String },
     location: { type: String },
     deviceType: { type: String },
+    emailSent: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

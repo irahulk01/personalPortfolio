@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { increaseViewCountIfNew } from "../api/portfolio";
 
 const LOCAL_STORAGE_KEY = "portfolio_uuid";
 
@@ -31,6 +32,10 @@ export default function SessionAnalyticsProvider({
       localStorage.setItem(LOCAL_STORAGE_KEY, vid);
     }
     visitorIdRef.current = vid;
+
+    // Trigger visit count increment for new visitors regardless of landing route
+    increaseViewCountIfNew().catch(() => {});
+
     pageStartTimeRef.current = Date.now();
 
     const handleResumeDownloaded = () => {

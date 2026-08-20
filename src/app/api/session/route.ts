@@ -126,172 +126,209 @@ async function sendCombinedSessionEmail({
     const resend = new Resend(apiKey);
     const recipient = process.env.CONTACT_NOTIFICATION_EMAIL || 'irahulkv@gmail.com';
 
-    // Fetch IP Geolocation
+    // Geo lookup
     const geo = ip ? await getIpGeoLocation(ip) : null;
     const locationStr = geo?.city
-      ? `${geo.city}, ${geo.regionName ? geo.regionName + ', ' : ''}${geo.country}`
-      : 'Local / Internal Visit';
+      ? `${geo.city}${geo.regionName ? ', ' + geo.regionName : ''}, ${geo.country}`
+      : 'Local / Unknown';
 
-    // Device Category Detection
-    const { deviceType, deviceIcon } = getDeviceInfo(browserDetails?.viewportSize, userAgent);
+    // Device detection
+    const { deviceType } = getDeviceInfo(browserDetails?.viewportSize, userAgent);
 
-    // Static Map Image URL
-    const mapImageUrl = geo?.lat && geo?.lon
-      ? `https://staticmap.openstreetmap.de/staticmap.php?center=${geo.lat},${geo.lon}&zoom=10&size=540x180&maptype=mapnik&markers=${geo.lat},${geo.lon},ol-marker`
-      : null;
+    // Page rows — only show pages with time > 0, sorted descending
+    const pageRowsHtml = SITE_PAGES
+      .map(({ route, label }) => {
+        const sec = pageBreakdown[route] || 0;
+        const isTop = route === topPage && sec > 0;
+        const isVisited = sec > 0;
+        const bg = isTop ? '#1e3a5f' : '#1a2236';
+        const timeColor = isTop ? '#60a5fa' : isVisited ? '#94a3b8' : '#475569';
+        const routeColor = isTop ? '#e2e8f0' : isVisited ? '#cbd5e1' : '#475569';
+        return `
+          <tr>
+            <td style="padding:10px 16px;border-bottom:1px solid #1e293b;background:${bg};color:${routeColor};font-size:13px;font-weight:${isTop ? '700' : '400'};">
+              ${route} <span style="color:#64748b;font-size:11px;">(${label})</span>
+              ${isTop ? ' <span style="color:#60a5fa;font-size:11px;font-weight:700;">★ TOP PAGE</span>' : ''}
+            </td>
+            <td style="padding:10px 16px;border-bottom:1px solid #1e293b;background:${bg};text-align:right;font-size:13px;font-weight:600;color:${timeColor};font-family:monospace;">
+              ${isVisited ? formatDuration(sec) : '—'}
+            </td>
+          </tr>`;
+      })
+      .join('');
 
-    // Build Page Breakdown Rows for all 5 site pages
-    const pageRows = SITE_PAGES.map(({ route, label }) => {
-      const sec = pageBreakdown[route] || 0;
-      const isTop = route === topPage && sec > 0;
-      const isVisited = sec > 0;
+    const cvBadge = downloadedResume
+      ? `<span style="background:#14532d;color:#86efac;border:1px solid #166534;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:700;">✓ Downloaded</span>`
+      : `<span style="background:#1e293b;color:#64748b;border:1px solid #334155;padding:4px 12px;border-radius:6px;font-size:12px;">✗ Not Downloaded</span>`;
 
-      return `
-        <tr style="border-bottom: 1px solid #edf1fd;">
-          <td style="padding: 10px 16px; font-weight: 600; color: #3e4355;">
-            ${route} <span style="font-size: 12px; color: #8c90aa; font-weight: normal;">(${label})</span>
-            ${isTop ? '<span style="color: #ff033e; font-size: 11px; font-weight: bold; margin-left: 6px;">★ HIGHEST INTEREST</span>' : ''}
-          </td>
-          <td style="padding: 10px 16px; text-align: right; font-weight: 700; color: ${isVisited ? '#3e4355' : '#8c90aa'};">
-            ${isVisited ? formatDuration(sec) : '<span style="color: #a0a5b8; font-weight: normal;">0s (Not Visited)</span>'}
-          </td>
-        </tr>
-      `;
-    }).join('');
-
-    const resumeBadgeHtml = downloadedResume
-      ? `<span style="color: #2e7d32; background-color: #e8f5e9; border: 1px solid #a5d6a7; font-weight: 800; font-size: 12px; padding: 4px 12px; border-radius: 9999px; display: inline-block;">📥 YES — Downloaded CV (Rahul_Kumar_CV.pdf)</span>`
-      : `<span style="color: #8c90aa; background-color: #f4f5f8; border: 1px solid #e0e2ec; font-weight: 600; font-size: 12px; padding: 4px 12px; border-radius: 9999px; display: inline-block;">❌ NO — Did Not Download CV</span>`;
+    const mapHtml = geo?.lat && geo?.lon
+      ? `<img src="https://staticmap.openstreetmap.de/staticmap.php?center=${geo.lat},${geo.lon}&zoom=10&size=540x160&maptype=mapnik&markers=${geo.lat},${geo.lon},ol-marker" alt="Location Map" style="width:100%;display:block;border-radius:0 0 8px 8px;" />`
+      : '';
 
     await resend.emails.send({
-      from: 'Portfolio Visitor Alert <onboarding@resend.dev>',
+      from: 'Portfolio Tracker <onboarding@resend.dev>',
       to: [recipient],
-      subject: `${downloadedResume ? '📄 CV DOWNLOADED! • ' : ''}Visitor Summary (#${visitCount}) - ${deviceType} (${formatDuration(totalDurationSeconds)} on site)`,
-      html: `
-        <div style="background-color: #edf1fd; padding: 30px 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-          <div style="max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 24px; border: 1.5px solid rgba(210, 218, 240, 0.8); box-shadow: 0 16px 40px rgba(62, 67, 85, 0.08); padding: 28px; overflow: hidden;">
-            
-            <!-- Combined Header -->
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; border-bottom: 2px solid #edf1fd; padding-bottom: 18px;">
-              <div>
-                <span style="display: inline-block; background-color: #ff033e; color: #ffffff; padding: 5px 16px; border-radius: 9999px; font-weight: 700; font-size: 13px; letter-spacing: 0.5px; box-shadow: 0 6px 16px rgba(255, 3, 62, 0.28);">VISITOR #${visitCount}</span>
-                <h2 style="color: #3e4355; margin: 12px 0 0 0; font-size: 22px; font-weight: 800;">🚀 Visitor Exit & Activity Summary</h2>
-              </div>
-              <img src="${deviceIcon}" alt="${deviceType}" style="width: 54px; height: 54px;" />
-            </div>
+      subject: `${downloadedResume ? '📄 CV Downloaded · ' : ''}Visitor #${visitCount} — ${deviceType} · ${formatDuration(totalDurationSeconds)}`,
+      html: `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#0f172a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f172a;padding:24px 8px;">
+    <tr><td align="center">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#0f172a;">
 
-            <!-- Device & Total Duration Summary Card -->
-            <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(237, 241, 253, 0.65) 100%); border: 1.5px solid rgba(210, 218, 240, 0.8); border-radius: 18px; padding: 16px 20px; margin-bottom: 20px;">
-              <div style="display: flex; align-items: center; gap: 14px;">
-                <img src="${deviceIcon}" alt="Device" style="width: 36px; height: 36px;" />
-                <div>
-                  <div style="font-size: 16px; font-weight: 700; color: #3e4355;">${deviceType}</div>
-                  <div style="font-size: 13px; color: #8c90aa; margin-top: 2px;">
-                    Viewport: <strong style="color: #3e4355;">${browserDetails?.viewportSize || 'N/A'}</strong> • Resolution: <strong style="color: #3e4355;">${browserDetails?.screenResolution || 'N/A'}</strong>
-                  </div>
-                  <div style="font-size: 14px; font-weight: 700; color: #ff033e; margin-top: 6px;">
-                    ⏱️ Total Time Spent: ${formatDuration(totalDurationSeconds)}
-                  </div>
-                </div>
-              </div>
-            </div>
+        <!-- HEADER -->
+        <tr>
+          <td style="padding:0 0 20px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#1e293b;border-radius:12px;border:1px solid #334155;">
+              <tr>
+                <td style="padding:20px 24px 16px 24px;border-bottom:1px solid #334155;">
+                  <span style="background:#1d4ed8;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;letter-spacing:0.5px;">VISITOR #${visitCount}</span>
+                  <p style="margin:10px 0 0 0;font-size:20px;font-weight:700;color:#f1f5f9;">Portfolio Visitor Summary</p>
+                  <p style="margin:4px 0 0 0;font-size:12px;color:#64748b;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST</p>
+                </td>
+              </tr>
+              <!-- QUICK STATS ROW -->
+              <tr>
+                <td style="padding:16px 24px;">
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="width:33%;text-align:center;padding:0 4px;">
+                        <p style="margin:0;font-size:22px;font-weight:700;color:#60a5fa;">${formatDuration(totalDurationSeconds)}</p>
+                        <p style="margin:4px 0 0 0;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Time on Site</p>
+                      </td>
+                      <td style="width:33%;text-align:center;padding:0 4px;border-left:1px solid #334155;border-right:1px solid #334155;">
+                        <p style="margin:0;font-size:22px;font-weight:700;color:#a78bfa;">${deviceType.split('/')[0].trim()}</p>
+                        <p style="margin:4px 0 0 0;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Device</p>
+                      </td>
+                      <td style="width:33%;text-align:center;padding:0 4px;">
+                        <p style="margin:0;font-size:22px;font-weight:700;color:${downloadedResume ? '#4ade80' : '#94a3b8'};">${downloadedResume ? 'YES' : 'NO'}</p>
+                        <p style="margin:4px 0 0 0;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">CV Download</p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-            <!-- Resume Download Action Card -->
-            <div style="background: #ffffff; border: 1.5px solid rgba(210, 218, 240, 0.8); border-radius: 18px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
-              <span style="font-weight: 700; font-size: 14px; color: #3e4355;">📄 Resume / CV Downloaded:</span>
-              ${resumeBadgeHtml}
-            </div>
+        <!-- DEVICE & BROWSER INFO -->
+        <tr>
+          <td style="padding:0 0 16px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="border-radius:10px;overflow:hidden;border:1px solid #334155;">
+              <tr><td style="background:#1e3a5f;padding:10px 16px;font-size:11px;font-weight:700;color:#93c5fd;letter-spacing:0.8px;text-transform:uppercase;">🖥 Device &amp; Browser</td></tr>
+              <tr>
+                <td style="background:#111827;padding:0;">
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:10px 16px;font-size:12px;color:#94a3b8;width:120px;border-bottom:1px solid #1e293b;">Device</td>
+                      <td style="padding:10px 16px;font-size:13px;color:#e2e8f0;font-weight:600;border-bottom:1px solid #1e293b;">${deviceType}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 16px;font-size:12px;color:#94a3b8;border-bottom:1px solid #1e293b;">Screen</td>
+                      <td style="padding:10px 16px;font-size:13px;color:#e2e8f0;font-family:monospace;border-bottom:1px solid #1e293b;">${browserDetails?.screenResolution || 'N/A'} (${browserDetails?.devicePixelRatio || 1}x DPR)</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 16px;font-size:12px;color:#94a3b8;border-bottom:1px solid #1e293b;">Viewport</td>
+                      <td style="padding:10px 16px;font-size:13px;color:#e2e8f0;font-family:monospace;border-bottom:1px solid #1e293b;">${browserDetails?.viewportSize || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 16px;font-size:12px;color:#94a3b8;border-bottom:1px solid #1e293b;">Language</td>
+                      <td style="padding:10px 16px;font-size:13px;color:#e2e8f0;border-bottom:1px solid #1e293b;">${browserDetails?.language || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 16px;font-size:12px;color:#94a3b8;border-bottom:1px solid #1e293b;">Timezone</td>
+                      <td style="padding:10px 16px;font-size:13px;color:#e2e8f0;border-bottom:1px solid #1e293b;">${browserDetails?.timezone || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 16px;font-size:12px;color:#94a3b8;border-bottom:1px solid #1e293b;">Traffic Source</td>
+                      <td style="padding:10px 16px;font-size:13px;color:#e2e8f0;border-bottom:1px solid #1e293b;">${browserDetails?.referrer || 'Direct'}</td>
+                    </tr>
+                    ${ip ? `
+                    <tr>
+                      <td style="padding:10px 16px;font-size:12px;color:#94a3b8;">IP Address</td>
+                      <td style="padding:10px 16px;font-size:13px;color:#60a5fa;font-family:monospace;">${ip.split(',')[0].trim()}</td>
+                    </tr>` : ''}
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-            <!-- Visitor Device & Telemetry Table -->
-            <div style="border: 1.5px solid rgba(210, 218, 240, 0.8); border-radius: 18px; overflow: hidden; margin-bottom: 20px;">
-              <div style="padding: 10px 16px; background: #3e4355; color: #ffffff; font-weight: 700; font-size: 13px;">
-                🖥️ VISITOR & DEVICE INFORMATION
-              </div>
-              <table style="width: 100%; border-collapse: collapse; font-size: 13.5px;">
-                <tr style="border-bottom: 1px solid #edf1fd;">
-                  <td style="padding: 10px 16px; font-weight: 600; color: #8c90aa; width: 140px; background-color: #ffffff;">🕒 Time (IST):</td>
-                  <td style="padding: 10px 16px; color: #3e4355; font-weight: 700; background-color: #ffffff;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #edf1fd;">
-                  <td style="padding: 10px 16px; font-weight: 600; color: #8c90aa; background-color: rgba(237, 241, 253, 0.4);">🖥️ Screen Size:</td>
-                  <td style="padding: 10px 16px; color: #3e4355; background-color: rgba(237, 241, 253, 0.4);">${browserDetails?.screenResolution || 'N/A'} (Retina: ${browserDetails?.devicePixelRatio || 1}x)</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #edf1fd;">
-                  <td style="padding: 10px 16px; font-weight: 600; color: #8c90aa; background-color: #ffffff;">📐 Viewport:</td>
-                  <td style="padding: 10px 16px; color: #3e4355; background-color: #ffffff;">${browserDetails?.viewportSize || 'N/A'}</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #edf1fd;">
-                  <td style="padding: 10px 16px; font-weight: 600; color: #8c90aa; background-color: rgba(237, 241, 253, 0.4);">🌍 Timezone:</td>
-                  <td style="padding: 10px 16px; color: #3e4355; background-color: rgba(237, 241, 253, 0.4);">${browserDetails?.timezone || 'N/A'}</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #edf1fd;">
-                  <td style="padding: 10px 16px; font-weight: 600; color: #8c90aa; background-color: #ffffff;">🗣️ Language:</td>
-                  <td style="padding: 10px 16px; color: #3e4355; background-color: #ffffff;">${browserDetails?.language || 'N/A'}</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #edf1fd;">
-                  <td style="padding: 10px 16px; font-weight: 600; color: #8c90aa; background-color: rgba(237, 241, 253, 0.4);">🔗 Traffic Source:</td>
-                  <td style="padding: 10px 16px; color: #3e4355; font-weight: 700; background-color: rgba(237, 241, 253, 0.4);">${browserDetails?.referrer || 'Direct / Bookmark'}</td>
-                </tr>
-                ${ip
-          ? `
-                <tr>
-                  <td style="padding: 10px 16px; font-weight: 600; color: #8c90aa; background-color: #ffffff;">🌐 IP Address:</td>
-                  <td style="padding: 10px 16px; color: #3e4355; font-family: monospace; background-color: #ffffff;">${ip}</td>
-                </tr>
-                  `
-          : ''
-        }
-              </table>
-            </div>
+        <!-- LOCATION -->
+        <tr>
+          <td style="padding:0 0 16px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="border-radius:10px;overflow:hidden;border:1px solid #334155;">
+              <tr><td style="background:#1e3a5f;padding:10px 16px;font-size:11px;font-weight:700;color:#93c5fd;letter-spacing:0.8px;text-transform:uppercase;">📍 Location</td></tr>
+              <tr>
+                <td style="background:#111827;padding:14px 16px;font-size:14px;color:#e2e8f0;font-weight:600;">
+                  ${locationStr}
+                  ${geo?.isp ? `<span style="font-size:12px;color:#64748b;font-weight:400;"> · ${geo.isp}</span>` : ''}
+                </td>
+              </tr>
+              ${mapHtml ? `<tr><td style="padding:0;">${mapHtml}</td></tr>` : ''}
+            </table>
+          </td>
+        </tr>
 
-            <!-- Location & Map Section -->
-            ${mapImageUrl
-          ? `
-                <div style="border: 1.5px solid rgba(210, 218, 240, 0.8); border-radius: 18px; overflow: hidden; margin-bottom: 20px;">
-                  <div style="padding: 10px 16px; background: rgba(237, 241, 253, 0.6); font-weight: 700; color: #3e4355; font-size: 13.5px; border-bottom: 1px solid rgba(210, 218, 240, 0.8);">
-                    📍 Visitor Location: <span style="color: #ff033e;">${locationStr}</span> ${geo?.isp ? `(${geo.isp})` : ''}
-                  </div>
-                  <img src="${mapImageUrl}" alt="Location Map" style="width: 100%; height: 170px; object-fit: cover; display: block;" />
-                </div>
-                `
-          : `
-                <div style="background: rgba(237, 241, 253, 0.6); border: 1.5px solid rgba(210, 218, 240, 0.8); border-radius: 18px; padding: 12px 16px; margin-bottom: 20px; font-size: 13.5px; color: #3e4355;">
-                  <strong>📍 Location:</strong> <span style="color: #3e4355; font-weight: 600;">${locationStr}</span>
-                </div>
-                `
-        }
+        <!-- CV DOWNLOAD -->
+        <tr>
+          <td style="padding:0 0 16px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="border-radius:10px;overflow:hidden;border:1px solid #334155;">
+              <tr><td style="background:#1e3a5f;padding:10px 16px;font-size:11px;font-weight:700;color:#93c5fd;letter-spacing:0.8px;text-transform:uppercase;">📄 CV / Resume</td></tr>
+              <tr>
+                <td style="background:#111827;padding:14px 16px;">
+                  ${cvBadge}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-            <!-- Page Time & Interest Breakdown Table -->
-            <div style="border: 1.5px solid rgba(210, 218, 240, 0.8); border-radius: 18px; overflow: hidden; margin-bottom: 20px;">
-              <div style="padding: 10px 16px; background: #3e4355; color: #ffffff; font-weight: 700; font-size: 13px;">
-                ⏱️ PAGE TIME & INTEREST BREAKDOWN
-              </div>
-              <table style="width: 100%; border-collapse: collapse; font-size: 13.5px;">
-                <thead>
-                  <tr style="background-color: rgba(237, 241, 253, 0.8); color: #3e4355; border-bottom: 1px solid #edf1fd;">
-                    <th style="padding: 8px 16px; text-align: left; font-size: 12px;">PAGE</th>
-                    <th style="padding: 8px 16px; text-align: right; font-size: 12px;">TIME SPENT</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${pageRows}
-                </tbody>
-              </table>
-            </div>
+        <!-- PAGE TIME BREAKDOWN -->
+        <tr>
+          <td style="padding:0 0 24px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="border-radius:10px;overflow:hidden;border:1px solid #334155;">
+              <tr><td style="background:#1e3a5f;padding:10px 16px;font-size:11px;font-weight:700;color:#93c5fd;letter-spacing:0.8px;text-transform:uppercase;">⏱ Time Per Page</td></tr>
+              <tr>
+                <td style="background:#1a2236;padding:0;">
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <th style="padding:8px 16px;text-align:left;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;background:#111827;border-bottom:1px solid #1e293b;">Page</th>
+                      <th style="padding:8px 16px;text-align:right;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;background:#111827;border-bottom:1px solid #1e293b;">Duration</th>
+                    </tr>
+                    ${pageRowsHtml}
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-            <!-- Footer -->
-            <div style="font-size: 12px; color: #8c90aa; text-align: center; border-top: 1.5px solid #edf1fd; padding-top: 16px;">
-              Sent automatically from your portfolio website visitor tracking system. Saved to MongoDB Atlas.
-            </div>
-          </div>
-        </div>
-      `,
+        <!-- FOOTER -->
+        <tr>
+          <td style="text-align:center;padding-bottom:16px;">
+            <p style="margin:0;font-size:11px;color:#334155;">Auto-sent by your portfolio tracker · Session data saved to MongoDB</p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
     });
-    console.log(`[Resend] Combined visitor exit email sent for Visit #${visitCount}`);
+
+    console.log(`[Session] Exit email sent for Visitor #${visitCount}`);
   } catch (err) {
-    console.error('[Resend] Failed to send combined email:', err);
+    console.error('[Session] Failed to send email:', err);
   }
 }
+
+
+
 
 export async function GET() {
   try {
@@ -379,7 +416,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // Determine top page
+    // Determine top page from time spent per page
     let topPage = '/';
     let maxSec = -1;
     if (pageBreakdown && typeof pageBreakdown === 'object') {
@@ -391,36 +428,46 @@ export async function POST(req: Request) {
       });
     }
 
-    // Upsert session in MongoDB including downloadedResume flag
+    // Extract IP and device info from request headers
+    const userAgent = req.headers.get('user-agent');
+    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip');
+    const { deviceType } = getDeviceInfo(browserDetails?.viewportSize, userAgent);
+
+    // Upsert session — persist ip and deviceType on first write, update times and pages on subsequent calls
+    const existingSession = await Session.findOne({ sessionId });
     const updatedSession = await Session.findOneAndUpdate(
       { sessionId },
       {
-        sessionId,
-        visitorId,
-        totalDurationSeconds: Math.round(totalDurationSeconds || 0),
-        topPage,
-        pageBreakdown: pageBreakdown || {},
-        downloadedResume: Boolean(downloadedResume),
-        updatedAt: new Date(),
+        $set: {
+          sessionId,
+          visitorId,
+          totalDurationSeconds: Math.round(totalDurationSeconds || 0),
+          topPage,
+          pageBreakdown: pageBreakdown || {},
+          downloadedResume: Boolean(downloadedResume),
+          updatedAt: new Date(),
+          // Only set ip and deviceType if not already stored
+          ...(existingSession?.ip ? {} : { ip: ip || undefined }),
+          ...(existingSession?.deviceType ? {} : { deviceType }),
+        },
       },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     );
 
-    // Fetch visit count
+    // Fetch current visit count for the email
     let visitCount = 1;
     try {
-      const visitObj = await Visit.findById("portfolio_visits");
+      const visitObj = await Visit.findById('portfolio_visits');
       if (visitObj) visitCount = visitObj.count;
     } catch {
       // ignore
     }
 
-    // Extract headers for device/IP details
-    const userAgent = req.headers.get('user-agent');
-    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip');
+    // Send exit email exactly once per session when visitor leaves
+    if (isFinal && (totalDurationSeconds || 0) >= 2 && !existingSession?.emailSent) {
+      // Mark email as sent before firing so concurrent final beacons don't double-send
+      await Session.findOneAndUpdate({ sessionId }, { $set: { emailSent: true } });
 
-    // Send ONE SINGLE COMBINED EMAIL when visitor leaves site
-    if (isFinal && (totalDurationSeconds || 0) >= 2) {
       sendCombinedSessionEmail({
         visitCount,
         totalDurationSeconds: Math.round(totalDurationSeconds || 0),
@@ -430,7 +477,7 @@ export async function POST(req: Request) {
         browserDetails,
         userAgent,
         ip,
-      }).catch((e) => console.error(e));
+      }).catch((e) => console.error('[Session] Email error:', e));
     }
 
     return NextResponse.json({ success: true, session: updatedSession });
@@ -439,3 +486,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: 'Failed to save session' }, { status: 500 });
   }
 }
+

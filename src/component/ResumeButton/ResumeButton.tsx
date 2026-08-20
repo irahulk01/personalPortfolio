@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-const resumePDF = '/Rahul_kumar_UI.pdf';
+const resumePDF = '/Rahulkumar.pdf';
 
 export const Resume = () => {
     const [showProgressBar, setShowProgressBar] = useState(false);
@@ -28,7 +28,7 @@ export const Resume = () => {
             .then(() => {
                 const link = document.createElement('a');
                 link.href = resumePDF; 
-                link.download = 'Rahul_Kumar_CV.pdf';
+                link.download = 'Rahul_Kumar_Resume.pdf';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
