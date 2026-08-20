@@ -11,6 +11,7 @@ export interface ISession extends Document {
   location?: string;
   deviceType?: string;
   emailSent?: boolean;
+  isReturningVisitor?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -27,6 +28,7 @@ const SessionSchema = new Schema<ISession>(
     location: { type: String },
     deviceType: { type: String },
     emailSent: { type: Boolean, default: false },
+    isReturningVisitor: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

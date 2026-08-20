@@ -109,6 +109,7 @@ async function sendCombinedSessionEmail({
   browserDetails,
   userAgent,
   ip,
+  isReturningVisitor,
 }: {
   visitCount: number;
   totalDurationSeconds: number;
@@ -118,6 +119,7 @@ async function sendCombinedSessionEmail({
   browserDetails?: BrowserDetails;
   userAgent?: string | null;
   ip?: string | null;
+  isReturningVisitor?: boolean;
 }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return;
@@ -168,7 +170,7 @@ async function sendCombinedSessionEmail({
     await resend.emails.send({
       from: 'Portfolio Tracker <onboarding@resend.dev>',
       to: [recipient],
-      subject: `${downloadedResume ? '📄 CV Downloaded · ' : ''}Visitor #${visitCount} — ${deviceType} · ${formatDuration(totalDurationSeconds)}`,
+      subject: `${downloadedResume ? '📄 CV Downloaded · ' : ''}${isReturningVisitor ? '🔁 Returning · ' : ''}Visitor #${visitCount} — ${deviceType} · ${formatDuration(totalDurationSeconds)}`,
       html: `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
@@ -193,17 +195,21 @@ async function sendCombinedSessionEmail({
                 <td style="padding:16px 24px;">
                   <table width="100%" cellpadding="0" cellspacing="0">
                     <tr>
-                      <td style="width:33%;text-align:center;padding:0 4px;">
-                        <p style="margin:0;font-size:22px;font-weight:700;color:#60a5fa;">${formatDuration(totalDurationSeconds)}</p>
+                      <td style="width:25%;text-align:center;padding:0 4px;">
+                        <p style="margin:0;font-size:20px;font-weight:700;color:#60a5fa;">${formatDuration(totalDurationSeconds)}</p>
                         <p style="margin:4px 0 0 0;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Time on Site</p>
                       </td>
-                      <td style="width:33%;text-align:center;padding:0 4px;border-left:1px solid #334155;border-right:1px solid #334155;">
-                        <p style="margin:0;font-size:22px;font-weight:700;color:#a78bfa;">${deviceType.split('/')[0].trim()}</p>
+                      <td style="width:25%;text-align:center;padding:0 4px;border-left:1px solid #334155;">
+                        <p style="margin:0;font-size:20px;font-weight:700;color:#a78bfa;">${deviceType.split('/')[0].trim()}</p>
                         <p style="margin:4px 0 0 0;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Device</p>
                       </td>
-                      <td style="width:33%;text-align:center;padding:0 4px;">
-                        <p style="margin:0;font-size:22px;font-weight:700;color:${downloadedResume ? '#4ade80' : '#94a3b8'};">${downloadedResume ? 'YES' : 'NO'}</p>
+                      <td style="width:25%;text-align:center;padding:0 4px;border-left:1px solid #334155;">
+                        <p style="margin:0;font-size:20px;font-weight:700;color:${downloadedResume ? '#4ade80' : '#94a3b8'};">${downloadedResume ? 'YES' : 'NO'}</p>
                         <p style="margin:4px 0 0 0;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">CV Download</p>
+                      </td>
+                      <td style="width:25%;text-align:center;padding:0 4px;border-left:1px solid #334155;">
+                        <p style="margin:0;font-size:20px;font-weight:700;color:${isReturningVisitor ? '#fb923c' : '#94a3b8'};">${isReturningVisitor ? '🔁 YES' : '1ST'}</p>
+                        <p style="margin:4px 0 0 0;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Returning</p>
                       </td>
                     </tr>
                   </table>
@@ -433,8 +439,13 @@ export async function POST(req: Request) {
     const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip');
     const { deviceType } = getDeviceInfo(browserDetails?.viewportSize, userAgent);
 
-    // Upsert session — persist ip and deviceType on first write, update times and pages on subsequent calls
+    // Check if this visitorId has appeared in any PREVIOUS session (different sessionId)
     const existingSession = await Session.findOne({ sessionId });
+    const isReturningVisitor = !existingSession
+      ? (await Session.exists({ visitorId, sessionId: { $ne: sessionId } })) !== null
+      : (existingSession.isReturningVisitor ?? false);
+
+    // Upsert session — persist ip, deviceType, and isReturningVisitor on first write only
     const updatedSession = await Session.findOneAndUpdate(
       { sessionId },
       {
@@ -446,9 +457,9 @@ export async function POST(req: Request) {
           pageBreakdown: pageBreakdown || {},
           downloadedResume: Boolean(downloadedResume),
           updatedAt: new Date(),
-          // Only set ip and deviceType if not already stored
           ...(existingSession?.ip ? {} : { ip: ip || undefined }),
           ...(existingSession?.deviceType ? {} : { deviceType }),
+          ...(existingSession ? {} : { isReturningVisitor }),
         },
       },
       { upsert: true, returnDocument: 'after' }
@@ -474,6 +485,7 @@ export async function POST(req: Request) {
         topPage,
         pageBreakdown: pageBreakdown || {},
         downloadedResume: Boolean(downloadedResume),
+        isReturningVisitor,
         browserDetails,
         userAgent,
         ip,
